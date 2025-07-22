@@ -161,3 +161,71 @@ h1, h2, h3, h4, .text-danger {
 .text-yellow-500 { color: #ffc107; }
 .text-orange-500 { color: #fd7e14; }
 .text-red-500 { color: #dc3545; }
+/* Glassmorphism Modal */
+.modal-glassmorphism {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: rgba(255,255,255,0.55);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+  padding: 40px 30px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.18);
+  min-width: 320px;
+}
+
+.modal-content input,
+.modal-content button {
+  font-size: 1.1rem;
+  margin-top: 8px;
+}
+
+/* Loader */
+.loader-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+}
+
+.logo-pulse {
+  width: 80px;
+  height: 80px;
+  animation: pulse 1.25s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 24px 10px;
+    min-width: unset;
+    width: 95vw;
+  }
+  .student-photo {
+    width: 56px;
+    height: 56px;
+  }
+}
