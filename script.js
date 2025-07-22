@@ -12,8 +12,9 @@ const resumptionDateDisplay = document.getElementById('resumptionDateValue'); //
 // Sample data
 const sampleSubjects = [
     "English Language", "Mathematics", "N.V", "P.V.S", "B.S.T",
-    "History", "Yoruba", "CRS", "C.C.A", "Literature in English",
-    "Business-Studies"
+    "History", "Yoruba", "CRS", "C.C.A", "Chemistry", "Biology", "Physics",
+    "Business-Studies", "Geography", "Computer-Practical", "Literature", "Government",
+    "Civic Education", "Agric", "Animal Husbandry",
 ];
 const classTeacherComments = [
     { value: "Excellent performance. Keep it up!", text: "Excellent performance. Keep it up!" },
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addSubject('Yoruba', 15, 28);
     addSubject('CRS', 17, 33);
     addSubject('C.C.A', 20, 26);
-    addSubject('Literature in English', 20, 24);
+    addSubject('Computer Practical', 20, 24);
     addSubject('Business-Studies', 15, 35);
 
     // Set the fixed resumption date to 15th September 2025
