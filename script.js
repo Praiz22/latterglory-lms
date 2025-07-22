@@ -12,9 +12,8 @@ const resumptionDateDisplay = document.getElementById('resumptionDateValue'); //
 // Sample data
 const sampleSubjects = [
     "English Language", "Mathematics", "N.V", "P.V.S", "B.S.T",
-    "History", "Yoruba", "CRS", "C.C.A", "Chemistry", "Biology", "Physics",
-    "Business-Studies", "Geography", "Computer-Practical", "Literature", "Government",
-    "Civic Education", "Agric", "Animal Husbandry",
+    "History", "Yoruba", "CRS", "C.C.A", "Literature in English",
+    "Business-Studies"
 ];
 const classTeacherComments = [
     { value: "Excellent performance. Keep it up!", text: "Excellent performance. Keep it up!" },
@@ -44,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addSubject('Yoruba', 15, 28);
     addSubject('CRS', 17, 33);
     addSubject('C.C.A', 20, 26);
-    addSubject('Computer Practical', 20, 24);
+    addSubject('Literature in English', 20, 24);
     addSubject('Business-Studies', 15, 35);
 
     // Set the fixed resumption date to 15th September 2025
@@ -437,19 +436,32 @@ async function generatePdfObject() {
     const photoYAnchor = y;
     const photoXAnchor = margin + infoBoxW;
 
-    console.log("Attempting to load passport photo. Current src:", photoImgData.substring(0, 50) + "...");
+    console.log("Attempting to load passport photo into PDF. Current photoPreview.src (first 50 chars):", photoImgData.substring(0, 50) + "...");
+    console.log("Checking if photoImgData is default placeholder:", photoImgData.includes('AQABAAD'));
+
     if (photoImgData && !photoImgData.includes('AQABAAD')) {
-        const {w: pw, h: ph} = await getImageDimensions(photoImgData, photoMaxW, photoMaxH);
-        console.log(`Passport photo dimensions: ${pw}x${ph}`);
-        if (pw > 0 && ph > 0) { // Only add if dimensions are valid
+        let pw, ph;
+        try {
+            const dimensions = await getImageDimensions(photoImgData, photoMaxW, photoMaxH);
+            pw = dimensions.w;
+            ph = dimensions.h;
+            console.log(`Passport photo dimensions calculated for PDF: W=${pw}mm, H=${ph}mm.`);
+        } catch (dimError) {
+            console.error("Error calculating passport photo dimensions:", dimError);
+            pw = 0; // Set to 0 to prevent adding image
+            ph = 0;
+        }
+
+        if (pw > 0 && ph > 0) {
             const photoX = photoXAnchor - pw - photoOffsetFromRightEdge;
             const photoY = photoYAnchor + (infoBoxH - ph) / 2;
-            pdf.addImage(photoImgData, 'PNG', photoX, photoY, pw, ph);
-
+            console.log(`Adding passport photo to PDF at X=${photoX}, Y=${photoY}, W=${pw}, H=${ph}.`);
+            pdf.addImage(photoImgData, 'PNG', photoX, photoY, pw, ph); // Ensure 'PNG' or 'JPEG' based on your image type
             pdf.setDrawColor(...COLOR_MID_GRAY).setLineWidth(0.3);
             pdf.rect(photoX, photoY, pw, ph, 'S');
+            console.log("Passport photo successfully added to PDF.");
         } else {
-            console.warn("Passport photo dimensions were invalid after loading, skipping addImage.");
+            console.warn("Passport photo dimensions were invalid (0 or less) after loading, skipping addImage to PDF.");
         }
     } else {
         console.warn("Student photo not found or is default placeholder. It will not be included in the PDF.");
@@ -519,29 +531,29 @@ async function generatePdfObject() {
 
         // C.A Score (right-aligned)
         pdf.setTextColor(...COLOR_BLACK); // Ensure color
-        pdf.text(String(subj.caScore), currentColX + colWidths[1] - cellPadding, y + colHeights/2 + 1, { align:'right' });
+        pdf.text(String(subj.caScore), currentColX + colWidths[1] - cellPadding, y + colHeights[1]/2 + 1, { align:'right' });
         currentColX += colWidths[1];
 
         // Exam Score (right-aligned)
         pdf.setTextColor(...COLOR_BLACK); // Ensure color
-        pdf.text(String(subj.examScore), currentColX + colWidths[2] - cellPadding, y + colHeights/2 + 1, { align:'right' });
+        pdf.text(String(subj.examScore), currentColX + colWidths[2] - cellPadding, y + colHeights[2]/2 + 1, { align:'right' });
         currentColX += colWidths[2];
 
         // Total (right-aligned)
         pdf.setTextColor(...COLOR_BLACK); // Ensure color
-        pdf.text(String(subj.total), currentColX + colWidths[3] - cellPadding, y + colHeights/2 + 1, { align:'right' });
+        pdf.text(String(subj.total), currentColX + colWidths[3] - cellPadding, y + colHeights[3]/2 + 1, { align:'right' });
         currentColX += colWidths[3];
 
         // Grade (centered, bold)
         pdf.setFont('helvetica','bold').setTextColor(...COLOR_BLACK); // Ensure color and bold
-        pdf.text(subj.grade, currentColX + colWidths[4]/2, y + colHeights/2 + 1, {align:'center'});
+        pdf.text(subj.grade, currentColX + colWidths[4]/2, y + colHeights[4]/2 + 1, {align:'center'});
         pdf.setFont('helvetica','normal'); // Reset font style
         currentColX += colWidths[4];
 
         // Remark (left-aligned, with padding and wrapping)
         pdf.setTextColor(...COLOR_BLACK); // Ensure color
         const remarkTextLines = pdf.splitTextToSize(subj.remark, colWidths[5] - 2 * cellPadding);
-        pdf.text(remarkTextLines, currentColX + cellPadding, y + colHeights/2 + 1 - (remarkTextLines.length-1)*2.2);
+        pdf.text(remarkTextLines, currentColX + cellPadding, y + colHeights[5]/2 + 1 - (remarkTextLines.length-1)*2.2);
 
         y += colHeights;
 
