@@ -88,9 +88,8 @@ h1, h2, h3, h4, .text-danger {
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    /* Adjusted background to be darker and more opaque */
-    background: rgba(0, 0, 0, 0.4); 
-    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.5); 
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -105,7 +104,7 @@ h1, h2, h3, h4, .text-danger {
     width: 90%;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
