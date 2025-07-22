@@ -9,6 +9,23 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-light">
+
+    <!-- Glassmorphism Admin Key Modal -->
+    <div id="adminModal" class="modal-glassmorphism">
+      <div class="modal-content">
+        <img src="logo.png" id="modalLogo" class="logo-pulse mb-3" alt="Logo" />
+        <h3>Enter Admin Key</h3>
+        <input type="password" id="adminKeyInput" class="form-control" placeholder="Admin Key" />
+        <button id="adminKeySubmit" class="btn btn-primary mt-3">Submit</button>
+        <div id="adminKeyError" class="text-danger mt-2" style="display:none;">Incorrect Key!</div>
+      </div>
+    </div>
+    <!-- Loader -->
+    <div id="loader" class="loader-container" style="display:none;">
+      <img src="logo.png" class="logo-pulse" alt="Logo" />
+    </div>
+
+
     <div class="container my-5">
         <h1 class="text-center mb-4 text-danger fw-bold">Latter Glory Academy - Student Result Generator</h1>
         <div class="card shadow-sm p-4 mb-5">
@@ -47,7 +64,7 @@
                         <label class="form-label">Passport Photograph</label>
                         <div class="d-flex align-items-center space-x-4">
                             <div class="position-relative me-3">
-                                <img id="photoPreview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Student Photo" class="img-fluid border border-secondary student-photo">
+                                <img id="photoPreview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Student Photo" class="img-fluid border border-secondary student-photo" style="width:80px; height:80px; border-radius:10px;">
                             </div>
                             <div class="flex-grow-1">
                                 <input type="file" id="studentPhoto" accept="image/*" class="d-none">
@@ -97,7 +114,7 @@
         </div>
         <div id="reportPreview" class="d-none card shadow-sm p-3" style="max-width: 210mm; margin: 0 auto;"></div>
         <div class="d-flex justify-content-center mt-4">
-            <button id="generateReportBtn" class="btn btn-danger">Generate Report</button>&nbsp &nbsp
+            <button id="generateReportBtn" class="btn btn-danger">Generate Report</button>&nbsp;
             <button id="savePdfBtn" class="btn btn-primary">Save as PDF</button>
         </div>
     </div>
