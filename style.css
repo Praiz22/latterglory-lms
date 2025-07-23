@@ -88,8 +88,9 @@ h1, h2, h3, h4, .text-danger {
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(255, 255, 255, 0.5); 
-    backdrop-filter: blur(10px);
+    /* Updated background with a subtle gradient for a futuristic feel */
+    background: linear-gradient(135deg, rgba(249, 240, 240, 0.4), rgba(249, 240, 240, 0.2));
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -98,18 +99,54 @@ h1, h2, h3, h4, .text-danger {
 
 .auth-modal {
     padding: 2.5rem;
-    border-radius: 12px;
+    border-radius: 16px; /* Slightly larger border-radius for a softer look */
     text-align: center;
-    max-width: 400px;
+    max-width: 450px; /* Slightly wider modal for better spacing */
     width: 90%;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.2);
+    
+    /* Sleeker, more refined glassmorphism effects */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2), 0 0 20px 5px rgba(255, 255, 255, 0.1) inset;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1.5rem; /* Adds space between elements inside the modal */
+    
+    /* Adds a subtle animation for a more dynamic feel */
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
+/* Optional: Add a subtle multicolor background to the body for the full effect */
+body {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b, #86a8e7, #91eae4);
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
 /* ... (rest of your CSS code - UNCHANGED) ... */
 
 .auth-modal img {
