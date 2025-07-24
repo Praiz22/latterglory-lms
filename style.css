@@ -1,8 +1,14 @@
 /* --- Global & Base Styles --- */
 body {
     font-family: 'Poppins', sans-serif;
-    color: #f1f1f1; /* Changed to a light color for better contrast on a dark background */
-    background-color: #1e1e1e; /* Solid dark background to make the modal pop */
+    color: #2c3e50; /* Dark text for better readability on the light gradient */
+    
+    /* Subtle, clean gradient for the main background */
+    background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    background-size: 400% 400%;
+    background-attachment: fixed; /* Ensures the background stays in place */
+    
+    animation: gradientAnimation 15s ease infinite; /* The animation still works on the subtle gradient */
     margin: 0;
     padding: 0;
 }
@@ -123,13 +129,12 @@ h1, h2, h3, h4, .text-danger {
     background-color: #17a2b8;
 }
 
-/* --- Admin Modal Styles (The New Merged Design) --- */
+/* --- Admin Modal Styles (The Final Design) --- */
 
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6); /* Slightly darker backdrop to make the modal pop more */
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.4); /* A simple overlay to dim the background */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,12 +148,12 @@ h1, h2, h3, h4, .text-danger {
     max-width: 450px;
     width: 90%;
     
-    /* NEW: The multicolor gradient is now on the modal itself */
-    background: linear-gradient(135deg, rgba(255, 126, 95, 0.15), rgba(254, 180, 123, 0.15), rgba(134, 168, 231, 0.15), rgba(145, 234, 228, 0.15));
-    background-size: 400% 400%;
+    /* The magic here: A semi-transparent white background for the frosted glass look */
+    background: rgba(255, 255, 255, 0.2);
     
-    /* The glassmorphism effect is applied on top of the gradient */
-    backdrop-filter: blur(20px);
+    /* The key to the effect: blurring the content BEHIND the modal */
+    backdrop-filter: blur(15px);
+    
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.1) inset;
     border: 1px solid rgba(255, 255, 255, 0.4);
     
@@ -157,7 +162,7 @@ h1, h2, h3, h4, .text-danger {
     align-items: center;
     gap: 1.5rem;
     
-    animation: fadeIn 0.5s ease-out forwards, gradientAnimation 15s ease infinite;
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
 /* --- Admin Modal Child Element Fixes --- */
@@ -168,16 +173,16 @@ h1, h2, h3, h4, .text-danger {
     animation: pulse 2s infinite;
 }
 
-/* Set text color to a dark, contrasting color to ensure visibility */
 .auth-modal h4 {
-    color: #f1f1f1 !important; /* Use light text color on this dark-toned background */
+    /* Now using dark text for contrast on the light blurred background */
+    color: #2c3e50 !important;
     margin-bottom: 1.5rem;
     font-size: 1.2rem;
-    text-shadow: 0 0 5px rgba(0,0,0,0.8); /* Add a subtle text shadow for readability */
+    text-shadow: none; /* No shadow needed now */
 }
 
 .auth-modal p, .auth-modal label {
-    color: #f1f1f1 !important;
+    color: #2c3e50 !important;
 }
 
 .auth-modal input {
@@ -185,8 +190,8 @@ h1, h2, h3, h4, .text-danger {
     padding: 0.8rem 1rem;
     margin-bottom: 1rem;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.4); /* Use a semi-transparent white for input background */
+    color: #2c3e50; /* Input text color is dark */
     font-size: 1rem;
     outline: none;
     box-sizing: border-box;
@@ -195,12 +200,12 @@ h1, h2, h3, h4, .text-danger {
 }
 
 .auth-modal input:focus {
-    border-color: var(--pink-accent); /* Use a more fitting accent color for focus */
-    box-shadow: 0 0 8px rgba(255, 192, 203, 0.5);
+    border-color: var(--deep-red);
+    box-shadow: 0 0 8px rgba(183, 28, 28, 0.3);
 }
 
 .auth-modal input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(44, 62, 80, 0.7);
 }
 
 .auth-modal button {
