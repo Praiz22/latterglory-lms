@@ -4,11 +4,12 @@ body {
     color: #2c3e50; /* Dark text for better readability on the light gradient */
     
     /* Subtle, clean gradient for the main background */
-    background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    background: linear-gradient(135deg, #e0eafc, #cfdef3, #b6d3f2, #d1e2f7); /* Added more colors for a smoother animation */
     background-size: 400% 400%;
     background-attachment: fixed; /* Ensures the background stays in place */
     
-    animation: gradientAnimation 15s ease infinite; /* The animation still works on the subtle gradient */
+    /* Animation is now correctly applied to the body */
+    animation: gradientAnimation 15s ease infinite;
     margin: 0;
     padding: 0;
 }
@@ -174,11 +175,10 @@ h1, h2, h3, h4, .text-danger {
 }
 
 .auth-modal h4 {
-    /* Now using dark text for contrast on the light blurred background */
     color: #2c3e50 !important;
     margin-bottom: 1.5rem;
     font-size: 1.2rem;
-    text-shadow: none; /* No shadow needed now */
+    text-shadow: none;
 }
 
 .auth-modal p, .auth-modal label {
@@ -190,8 +190,8 @@ h1, h2, h3, h4, .text-danger {
     padding: 0.8rem 1rem;
     margin-bottom: 1rem;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.4); /* Use a semi-transparent white for input background */
-    color: #2c3e50; /* Input text color is dark */
+    background: rgba(255, 255, 255, 0.4);
+    color: #2c3e50;
     font-size: 1rem;
     outline: none;
     box-sizing: border-box;
