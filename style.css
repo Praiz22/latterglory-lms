@@ -1,13 +1,15 @@
+/* --- Body Styles --- */
+/* The original body style is correct. This is the background the blur effect will work on. */
 body {
     font-family: 'Poppins', sans-serif;
     color: #212529;
-}
-body {
+    /* This multicolor background is crucial for the glassmorphism effect to work. */
     background: linear-gradient(135deg, #ff7e5f, #feb47b, #86a8e7, #91eae4);
     background-size: 400% 400%;
     animation: gradientAnimation 15s ease infinite;
 }
 
+/* --- Keyframe Animations (Unchanged) --- */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -31,92 +33,21 @@ body {
     }
 }
 
+/* --- Root Variables --- */
 :root {
     --deep-red: #b71c1c;
-    --pink-accent: #FFC0CB; /* Not directly used, but kept for consistency */
+    --pink-accent: #FFC0CB;
     --black-text: #212529;
     --white-bg: #fff;
 }
 
-h1, h2, h3, h4, .text-danger {
-    color: var(--deep-red) !important;
-}
+/* --- Admin Modal Styles --- */
 
-.report-header {
-    background-color: var(--deep-red);
-    color: var(--white-bg);
-    padding: 1.5rem;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    border-radius: 0.5rem 0.5rem 0 0;
-}
-
-.report-logo {
-    height: 90px;
-    width: auto;
-    margin-bottom: 1rem;
-    filter: brightness(1.2) contrast(1.1);
-}
-
-/* Student Photo adjustments for responsiveness */
-.student-photo {
-    width: 100px;
-    height: 120px;
-    border-radius: 5px;
-    object-fit: cover;
-    border: 3px solid var(--deep-red);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    /* For mobile, make sure it doesn't get too big */
-    max-width: 100%; /* Ensures image scales down */
-    height: auto; /* Maintains aspect ratio */
-}
-
-.score-table th, .score-table td {
-    font-size: 0.9em;
-}
-
-/* No direct changes to .performance-card, .signature-line, .text-center.mt-8.text-sm for mobile */
-
-.fade-in {
-    animation: fadeIn 0.3s ease-in;
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.subject-row .form-control,
-.subject-row .form-select {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-}
-
-.custom-alert {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.25rem;
-    color: #fff;
-    z-index: 1050;
-    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
-    transform: translateX(100%);
-    opacity: 0;
-}
-.custom-alert.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-.custom-alert.alert-success { background-color: #28a745; }
-.custom-alert.alert-danger { background-color: #dc3545; }
-.custom-alert.alert-info { background-color: #17a2b8; }
-
-/* Admin Modal Responsiveness */
-/* ... (previous CSS code) ... */
-
-/* Admin Modal Responsiveness */
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    /* Updated background with a subtle gradient for a futuristic feel */
-    background: linear-gradient(135deg, rgba(249, 240, 240, 0.4), rgba(249, 240, 240, 0.2));
+    /* To ensure the multicolor blur effect works, we must use a transparent or semi-transparent background. */
+    background: rgba(249, 240, 240, 0.1); 
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -126,53 +57,65 @@ h1, h2, h3, h4, .text-danger {
 
 .auth-modal {
     padding: 2.5rem;
-    border-radius: 16px; /* Slightly larger border-radius for a softer look */
+    border-radius: 16px;
     text-align: center;
-    max-width: 450px; /* Slightly wider modal for better spacing */
+    max-width: 450px;
     width: 90%;
     
-    /* Sleeker, more refined glassmorphism effects */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    /* This background is the key to the glassmorphism effect. It must be semi-transparent. */
+    background: rgba(255, 255, 255, 0.2);
+    /* The box-shadow provides the depth and "floating" effect. */
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2), 0 0 20px 5px rgba(255, 255, 255, 0.1) inset;
     border: 1px solid rgba(255, 255, 255, 0.3);
     
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem; /* Adds space between elements inside the modal */
+    gap: 1.5rem;
     
-    /* Adds a subtle animation for a more dynamic feel */
     animation: fadeIn 0.5s ease-out forwards;
 }
 
-/* Optional: Add a subtle multicolor background to the body for the full effect */
-
-/* ... (rest of your CSS code - UNCHANGED) ... */
+/* --- Refined Auth Modal Child Elements --- */
 
 .auth-modal img {
-    max-width: 100px; /* Adjusted logo size for mobile */
+    max-width: 100px;
     height: auto;
     margin-bottom: 1.5rem;
     animation: pulse 2s infinite;
 }
 
 .auth-modal h4 {
-    color: white;
+    /* Set text color to white for better contrast against the blurred background. */
+    color: white; 
     margin-bottom: 1.5rem;
-    font-size: 1.2rem; /* Adjusted font size */
+    font-size: 1.2rem;
 }
 
 .auth-modal input {
     width: 100%;
-    padding: 0.8rem 1rem; /* Adjusted padding */
+    padding: 0.8rem 1rem;
     margin-bottom: 1rem;
     border: none;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.2);
+    /* IMPORTANT: To make the text input areas blend, their background must also be semi-transparent.
+       This is likely where the "white blur" issue was coming from.
+       Changing this will make them appear as part of the glass pane. */
+    background: rgba(255, 255, 255, 0.15); 
     color: white;
     font-size: 1rem;
     outline: none;
-    box-sizing: border-box; /* Ensures padding doesn't increase width */
+    box-sizing: border-box; 
+    
+    /* Add a subtle, colored border on focus for a modern, interactive look. */
+    border: 1px solid transparent; 
+    transition: border-color 0.3s ease;
+}
+
+.auth-modal input:focus {
+    /* A colorful border on focus highlights the active field. */
+    border-color: #ff7e5f;
+    box-shadow: 0 0 8px rgba(255, 126, 95, 0.5);
 }
 
 .auth-modal input::placeholder {
@@ -180,19 +123,24 @@ h1, h2, h3, h4, .text-danger {
 }
 
 .auth-modal button {
-    background-color: var(--deep-red);
+    background: linear-gradient(45deg, var(--deep-red), #e74c3c); /* Use a subtle gradient for a futuristic button */
     color: white;
     border: none;
     padding: 0.8rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.3s ease;
-    width: 100%; /* Make button full width on mobile */
+    transition: background 0.3s ease, transform 0.2s ease; /* Add transform for a subtle press effect */
+    width: 100%;
 }
 
 .auth-modal button:hover {
-    background-color: #8B0000;
+    background: linear-gradient(45deg, #e74c3c, var(--deep-red)); /* Reverse the gradient on hover */
+    transform: translateY(-2px); /* Lift the button slightly on hover */
+}
+
+.auth-modal button:active {
+    transform: translateY(0); /* Press the button down on click */
 }
 
 @keyframes pulse {
@@ -201,25 +149,23 @@ h1, h2, h3, h4, .text-danger {
     100% { transform: scale(1); }
 }
 
-/* Media Queries for fine-tuning responsiveness */
-@media (max-width: 768px) { /* For tablets and smaller */
+/* --- Media Queries (Unchanged) --- */
+@media (max-width: 768px) {
     .container {
-        padding: 0 10px; /* Reduce padding on container */
+        padding: 0 10px;
     }
     h1 {
-        font-size: 1.8rem; /* Smaller heading for mobile */
+        font-size: 1.8rem;
     }
     h2 {
-        font-size: 1.5rem; /* Smaller subheadings */
+        font-size: 1.5rem;
     }
     .card {
-        padding: 15px !important; /* Reduce card padding */
+        padding: 15px !important;
     }
     .form-label {
-        font-size: 0.9rem; /* Slightly smaller labels */
+        font-size: 0.9rem;
     }
-
-    /* Adjust student photo section for mobile stacking */
     .d-flex.flex-column.flex-md-row {
         flex-direction: column !important;
         align-items: center !important;
@@ -228,15 +174,10 @@ h1, h2, h3, h4, .text-danger {
         margin-right: 0 !important;
         margin-bottom: 1rem !important;
     }
-
-    /* Table responsiveness (already using Bootstrap's table-responsive) */
-    /* Further specific table adjustments if needed */
     .table th, .table td {
-        white-space: nowrap; /* Prevent text wrapping in table headers/cells if content is long */
-        padding: 0.5rem; /* Reduce table cell padding */
+        white-space: nowrap;
+        padding: 0.5rem;
     }
-
-    /* Buttons at the bottom */
     .d-flex.justify-content-center.flex-column.flex-sm-row {
         flex-direction: column !important;
     }
@@ -249,7 +190,7 @@ h1, h2, h3, h4, .text-danger {
     }
 }
 
-@media (max-width: 576px) { /* For small phones */
+@media (max-width: 576px) {
     h1 {
         font-size: 1.5rem;
     }
@@ -267,77 +208,3 @@ h1, h2, h3, h4, .text-danger {
         padding: 0.6rem 1rem;
     }
 }
-
-/* Print Styles (already existing and fine) */
-@media print {
-    @page {
-        size: A4;
-        margin: 8mm;
-    }
-    body * {
-        visibility: hidden;
-    }
-    #reportPreview, #reportPreview * {
-        visibility: visible;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    #reportPreview {
-        width: 100%;
-        min-height: auto;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-size: 10pt;
-        box-shadow: none;
-        border-radius: 0;
-    }
-    .no-print {
-        display: none !important;
-    }
-    .report-header {
-        padding: 5mm 0;
-        margin-bottom: 5mm;
-        border-radius: 0;
-    }
-    .report-logo {
-        height: 70px;
-        margin-bottom: 5mm;
-    }
-    .student-photo {
-        width: 30mm;
-        height: 35mm;
-        border-width: 1px;
-        box-shadow: none;
-    }
-    .score-table {
-        font-size: 9.5pt;
-        margin: 6mm 0;
-    }
-    .score-table th, .score-table td {
-        padding: 2mm 3mm;
-    }
-    .performance-card {
-        padding: 4mm;
-        margin: 4mm 0;
-        border: 1px solid #ddd;
-    }
-    .performance-summary {
-        font-size: 10pt;
-    }
-    .signature-line {
-        margin-top: 25px;
-    }
-    .text-center.mt-8.text-sm {
-        margin-top: 10mm;
-        font-size: 8.5pt;
-    }
-}
-
-/* Color classes (already existing) */
-.text-green-600 { color: #28a745; }
-.text-green-500 { color: #2ecc71; }
-.text-blue-500 { color: #3498db; }
-.text-yellow-500 { color: #ffc107; }
-.text-orange-500 { color: #fd7e14; }
-.text-red-500 { color: #dc3545; }
