@@ -419,7 +419,7 @@ async function generatePdfObject() {
     pdf.text('Student Result Report', pageWidth/2, y, { align: 'center' });
     y += 6;
     pdf.setFont('helvetica','normal').setFontSize(9.5).setTextColor(...COLOR_BLACK);
-    pdf.text('Term: Second Term 2024/2025 Academic Session', pageWidth/2, y, { align: 'center' });
+    pdf.text('Term: Third Term 2024/2025 Academic Session', pageWidth/2, y, { align: 'center' });
     y += 7;
 
     // --- STUDENT INFO BOX ---
@@ -684,3 +684,4 @@ async function saveAsPDF() {
         savePdfBtn.disabled = false;
     }
 }
+
