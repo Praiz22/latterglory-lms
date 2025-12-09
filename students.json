@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "AKANGBE PHILIP",
+    "class": "JSS1",
+    "gender": "Male",
+    "regNumber": "J1/24/01/001",
+    "photo": "akangbe_philip.jpg"
+  },
+  {
+    "id": 2,
+    "name": "ADEBAYO GRACE",
+    "class": "JSS1",
+    "gender": "Female",
+    "regNumber": "J1/24/01/002",
+    "photo": "adebayo_grace.jpg"
+  }
+]
