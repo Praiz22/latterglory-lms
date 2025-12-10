@@ -1,12 +1,13 @@
 /**
  * LATTER GLORY ACADEMY RESULT SYSTEM
- * Modularized Architecture
+ * Updated: 1st Term Fixes + Aspect Ratio + Metrics
  */
 
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "2025-09-15",
+    resumptionDate: "2025-01-13", // Updated for 2nd term resumption
+    currentTerm: "1st Term 2024/2025",
     maxSubjects: 18,
     sampleSubjects: [
         "English Language", "Mathematics", "N.V", "P.V.S", "B.S.T",
@@ -31,8 +32,6 @@ const app = {
             if(response.ok) {
                 app.studentsDB = await response.json();
                 app.populateArchiveDropdown();
-            } else {
-                console.warn("students.json not found.");
             }
         } catch (e) {
             console.log("Running in static mode without database server.");
@@ -86,7 +85,6 @@ const app = {
         document.getElementById('studentGender').value = student.gender;
         document.getElementById('regNumber').value = student.regNumber;
         
-        // Load Image from Folder
         if(student.photo) {
             document.getElementById('photoPreview').src = `student_images/${student.photo}`;
         }
@@ -106,8 +104,8 @@ const app = {
         const teachers = document.getElementById('classTeacherComment');
         const principals = document.getElementById('principalComment');
         
-        const tOptions = ["Excellent result.", "Good performance.", "Can do better.", "Needs to sit up."];
-        const pOptions = ["Outstanding performance.", "Promoted to next class.", "Advised to repeat.", "Good result."];
+        const tOptions = ["Excellent result.", "Good performance.", "He is a good boy but plays too much.", "Needs to sit up.", "An obedient student."];
+        const pOptions = ["Outstanding performance.", "Promoted to next class.", "Advised to repeat.", "Good result.", "Satisfactory."];
 
         tOptions.forEach(o => teachers.add(new Option(o, o)));
         pOptions.forEach(o => principals.add(new Option(o, o)));
@@ -120,9 +118,7 @@ const app = {
 
 // 3. SCORE MANAGER
 const scoreManager = {
-    init: () => {
-        // any specific score init
-    },
+    init: () => {},
 
     addSubject: (defaultName = '') => {
         const tbody = document.getElementById('subjectsBody');
@@ -186,17 +182,49 @@ const scoreManager = {
 
 // 4. PDF GENERATOR
 const pdfGenerator = {
+    // --- HELPER: Draw Image keeping Aspect Ratio ---
+    drawImageProp: (doc, img, x, y, w, h) => {
+        // Calculate aspect ratio
+        const imgRatio = img.width / img.height;
+        const boxRatio = w / h;
+        
+        let newW, newH;
+
+        if (imgRatio > boxRatio) {
+            // Image is wider than box (fit to width)
+            newW = w;
+            newH = w / imgRatio;
+        } else {
+            // Image is taller than box (fit to height)
+            newH = h;
+            newW = h * imgRatio;
+        }
+
+        // Center the image in the box
+        const offsetX = x + (w - newW) / 2;
+        const offsetY = y + (h - newH) / 2;
+
+        doc.addImage(img, 'PNG', offsetX, offsetY, newW, newH);
+        
+        // Optional: Draw a border around the container to show the area
+        // doc.setDrawColor(200, 200, 200);
+        // doc.rect(x, y, w, h); 
+    },
+
     createPDF: async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        const red = [183, 28, 28]; // #b71c1c
+        const red = [183, 28, 28]; // Brand Color
         
-        // --- Header ---
-        // Logo
+        // --- 1. HEADER ---
+        // Logo with Aspect Ratio Fix
         try {
             const logoImg = await pdfGenerator.loadImage('latter-glory logo.png');
-            if(logoImg) doc.addImage(logoImg, 'PNG', 15, 10, 25, 25);
-        } catch(e) { console.log("Logo not found"); }
+            if(logoImg) {
+                // Box size: 25x25, Position: 15,10
+                pdfGenerator.drawImageProp(doc, logoImg, 15, 10, 25, 25);
+            }
+        } catch(e) { console.log("Logo error"); }
 
         // School Text
         doc.setFont("helvetica", "bold").setFontSize(18).setTextColor(...red);
@@ -209,22 +237,22 @@ const pdfGenerator = {
         doc.setDrawColor(200, 200, 200);
         doc.line(15, 40, 195, 40);
 
-        // --- Bio Data & Photo ---
-        // Box Background
+        // --- 2. STUDENT INFO ---
+        // Gray Box
         doc.setFillColor(248, 248, 248);
         doc.rect(15, 45, 180, 35, 'F');
 
-        // Student Photo
+        // Student Photo with Aspect Ratio Fix
         const photoEl = document.getElementById('photoPreview');
         if(photoEl.src && !photoEl.src.includes('base64,R0lGODlh')) {
             try {
-                // If local file path, we need to convert to canvas first to avoid CORS in some PDF viewers
-                // But since we are likely on local/netlify, we try direct add
-                doc.addImage(photoEl.src, 'JPEG', 160, 47, 30, 31); 
-            } catch(e) {
-                 // Fallback: If it's an external URL (GitHub) it might fail without proxy
-                 // Just continue without image
-            }
+                // We create a temporary Image object to get dimensions for calculation
+                const tempImg = await pdfGenerator.loadImage(photoEl.src);
+                if(tempImg) {
+                    // Box size: 30x30, Position: 160, 47.5
+                    pdfGenerator.drawImageProp(doc, tempImg, 160, 47.5, 30, 30);
+                }
+            } catch(e) {}
         }
 
         const name = document.getElementById('studentName').value.toUpperCase();
@@ -237,11 +265,13 @@ const pdfGenerator = {
         doc.setFont("helvetica", "bold").text("CLASS:", 20, 62); doc.setFont("helvetica", "normal").text(sClass, 50, 62);
         doc.setFont("helvetica", "bold").text("GENDER:", 20, 69); doc.setFont("helvetica", "normal").text(gender, 50, 69);
         doc.setFont("helvetica", "bold").text("REG NO:", 90, 62); doc.setFont("helvetica", "normal").text(reg, 110, 62);
-        doc.setFont("helvetica", "bold").text("TERM:", 90, 69); doc.setFont("helvetica", "normal").text("3RD TERM 2024/25", 110, 69);
+        
+        // UPDATED TERM HERE
+        doc.setFont("helvetica", "bold").text("TERM:", 90, 69); 
+        doc.setFont("helvetica", "normal").text(CONFIG.currentTerm, 110, 69);
 
-        // --- Table ---
+        // --- 3. ACADEMIC TABLE ---
         let y = 90;
-        // Table Header
         doc.setFillColor(...red);
         doc.rect(15, y, 180, 8, 'F');
         doc.setTextColor(255, 255, 255).setFont("helvetica", "bold");
@@ -251,13 +281,17 @@ const pdfGenerator = {
         doc.text("TOTAL", 150, y+5);
         doc.text("GRADE", 170, y+5);
 
-        // Table Rows
         y += 8;
         doc.setTextColor(0, 0, 0).setFont("helvetica", "normal");
         
         const rows = document.querySelectorAll('.subject-row');
+        
+        // --- METRICS COUNTERS ---
         let totalScore = 0;
-        let subjectCount = 0;
+        let subjectsTaken = 0;
+        let subjectsPassed = 0; // A, B, C, D
+        let subjectsFailed = 0; // F
+        let distinctions = 0;   // A
 
         rows.forEach((row, i) => {
             if(i % 2 !== 0) { doc.setFillColor(245, 245, 245); doc.rect(15, y, 180, 7, 'F'); }
@@ -274,26 +308,67 @@ const pdfGenerator = {
                 doc.text(ca, 110, y+5);
                 doc.text(exam, 130, y+5);
                 doc.text(total, 150, y+5);
-                doc.text(grade, 175, y+5); // Adjusted X for center alignment visually
+                doc.text(grade, 175, y+5);
+                
+                // Update Metrics
+                const numTotal = parseInt(total);
+                totalScore += numTotal;
+                subjectsTaken++;
+                
+                if (grade === 'A') {
+                    distinctions++;
+                    subjectsPassed++;
+                } else if (['B', 'C', 'D'].includes(grade)) {
+                    subjectsPassed++;
+                } else {
+                    subjectsFailed++;
+                }
+
                 y += 7;
-                totalScore += parseInt(total);
-                subjectCount++;
             }
         });
 
-        // --- Summary & Remarks ---
-        y += 10;
-        doc.setDrawColor(200, 200, 200).setLineWidth(0.1);
-        doc.line(15, y, 195, y);
-        y += 10;
+        // --- 4. PERFORMANCE METRICS GRID ---
+        y += 5;
+        // Draw a container for metrics
+        doc.setDrawColor(200, 200, 200);
+        doc.setFillColor(255, 255, 255);
+        
+        // Define Grid Boxes
+        const boxY = y;
+        const boxH = 15;
+        const boxW = 35; // width of each metric box
+        const startX = 20;
+        const gap = 5;
 
-        const average = subjectCount > 0 ? (totalScore / subjectCount).toFixed(2) : "0.00";
+        // Helper to draw metric box
+        const drawMetric = (label, value, xPos, color = [0,0,0]) => {
+            doc.setDrawColor(220, 220, 220);
+            doc.setFillColor(250, 250, 250);
+            doc.rect(xPos, boxY, boxW, boxH, 'FD');
+            
+            doc.setFontSize(7).setFont("helvetica", "bold").setTextColor(100, 100, 100);
+            doc.text(label, xPos + boxW/2, boxY + 5, {align: 'center'});
+            
+            doc.setFontSize(11).setTextColor(...color);
+            doc.text(String(value), xPos + boxW/2, boxY + 11, {align: 'center'});
+        };
+
+        const average = subjectsTaken > 0 ? (totalScore / subjectsTaken).toFixed(1) : "0.0";
+        const percentage = subjectsTaken > 0 ? ((subjectsPassed / subjectsTaken) * 100).toFixed(0) + "%" : "0%";
+
+        drawMetric("TOTAL SUBJECTS", subjectsTaken, startX);
+        drawMetric("PASSED", subjectsPassed, startX + boxW + gap, [0, 128, 0]); // Green
+        drawMetric("FAILED", subjectsFailed, startX + (boxW + gap)*2, [200, 0, 0]); // Red
+        drawMetric("DISTINCTIONS", distinctions, startX + (boxW + gap)*3, [0, 0, 200]); // Blue
+        drawMetric("AVERAGE", average, startX + (boxW + gap)*4);
+
+        y += 25; // Move down past the metrics boxes
+
+        // --- 5. REMARKS & SIGNATURES ---
+        doc.setTextColor(0, 0, 0).setFontSize(10);
         
         doc.setFont("helvetica", "bold");
-        doc.text(`NO. OF SUBJECTS: ${subjectCount}`, 15, y);
-        doc.text(`AVERAGE SCORE: ${average}`, 80, y);
-        
-        y += 10;
         doc.text("CLASS TEACHER'S REMARK:", 15, y);
         doc.setFont("helvetica", "normal");
         doc.text(document.getElementById('classTeacherComment').value, 80, y);
@@ -353,7 +428,7 @@ const pdfGenerator = {
     loadImage: (url) => {
         return new Promise(resolve => {
             const img = new Image();
-            img.crossOrigin = "Anonymous"; // Crucial for external/local images
+            img.crossOrigin = "Anonymous";
             img.src = url;
             img.onload = () => resolve(img);
             img.onerror = () => resolve(null);
