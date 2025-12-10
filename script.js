@@ -1,12 +1,7 @@
-/**
- * LATTER GLORY ACADEMY RESULT SYSTEM
- * Updated: 1st Term Fixes + Aspect Ratio + Metrics
- */
-
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "2025-01-13", // Updated for 2nd term resumption
+    resumptionDate: "2025-01-13", // Example date for 2nd term resumption
     currentTerm: "1st Term 2024/2025",
     maxSubjects: 18,
     sampleSubjects: [
@@ -20,6 +15,7 @@ const CONFIG = {
 // 2. APP CONTROLLER
 const app = {
     studentsDB: [],
+    selectedClass: null,
 
     init: async () => {
         app.setResumptionDate();
@@ -31,13 +27,11 @@ const app = {
             const response = await fetch('students.json');
             if(response.ok) {
                 app.studentsDB = await response.json();
-                app.populateArchiveDropdown();
             }
         } catch (e) {
-            console.log("Running in static mode without database server.");
+            console.warn("Running in static mode. JSON database not found.");
         }
         
-        // Add default subjects
         scoreManager.addSubject('English Language');
         scoreManager.addSubject('Mathematics');
     },
@@ -46,14 +40,103 @@ const app = {
         const key = document.getElementById("adminKeyInput").value.trim();
         if (key === CONFIG.adminKey) {
             document.getElementById("authModal").style.display = "none";
-            document.getElementById("mainContent").classList.remove("d-none");
+            // Show the class selection modal next
+            document.getElementById("classSelectModal").classList.remove("d-none");
+            app.setupClassModalEvents();
         } else {
             const err = document.getElementById("authError");
             err.classList.remove("d-none");
             setTimeout(() => err.classList.add("d-none"), 3000);
         }
     },
+    
+    setupClassModalEvents: () => {
+        const classSelect = document.getElementById('classSelectInput');
+        const loadBtn = document.getElementById('loadClassBtn');
+        
+        classSelect.addEventListener('change', () => {
+            loadBtn.disabled = classSelect.value === "";
+        });
+    },
 
+    loadClassData: () => {
+        const selectedClassValue = document.getElementById('classSelectInput').value;
+        if (!selectedClassValue) return;
+
+        app.selectedClass = selectedClassValue;
+        
+        // Update the main form's class field
+        document.getElementById('studentClass').value = selectedClassValue;
+        
+        document.getElementById("classSelectModal").classList.add("d-none");
+        document.getElementById("mainContent").classList.remove("d-none");
+        
+        // Load and populate registration numbers for the selected class
+        app.populateRegNumberDropdown(selectedClassValue);
+    },
+
+    populateRegNumberDropdown: (className) => {
+        const regSelect = document.getElementById('regNumberSelect');
+        regSelect.innerHTML = '<option value="">Select Reg No...</option>';
+        regSelect.disabled = true;
+
+        const filteredStudents = app.studentsDB.filter(s => s.class === className);
+        
+        if (filteredStudents.length > 0) {
+            filteredStudents.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.regNumber;
+                option.textContent = `${student.regNumber} - ${student.name}`;
+                regSelect.appendChild(option);
+            });
+            regSelect.disabled = false;
+        } else {
+            const option = document.createElement('option');
+            option.value = "new_entry";
+            option.textContent = `No students found for ${className}. Manual Entry.`;
+            regSelect.appendChild(option);
+            regSelect.disabled = false;
+            app.clearStudentData();
+        }
+
+        regSelect.removeEventListener('change', app.handleRegNumberChange);
+        regSelect.addEventListener('change', app.handleRegNumberChange);
+    },
+
+    handleRegNumberChange: (e) => {
+        const regNumber = e.target.value;
+        if (regNumber === "" || regNumber === "new_entry") {
+             app.clearStudentData();
+             return;
+        }
+        
+        const student = app.studentsDB.find(s => s.regNumber === regNumber);
+        if (student) {
+            app.fillStudentData(student);
+        }
+    },
+
+    fillStudentData: (student) => {
+        document.getElementById('studentClass').value = app.selectedClass || student.class;
+        document.getElementById('studentName').value = student.name;
+        document.getElementById('studentGender').value = student.gender;
+        
+        if(student.photo) {
+            document.getElementById('photoPreview').src = `student_images/${student.photo}`;
+        }
+    },
+
+    clearStudentData: () => {
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentGender').value = 'Male';
+        document.getElementById('studentClass').value = app.selectedClass || 'JSS1';
+        document.getElementById('photoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
+        
+        document.getElementById('subjectsBody').innerHTML = '';
+        scoreManager.addSubject('English Language');
+        scoreManager.addSubject('Mathematics');
+    },
+    
     setResumptionDate: () => {
         const d = new Date(CONFIG.resumptionDate);
         document.getElementById('resumptionDateValue').textContent = d.toLocaleDateString('en-US', { 
@@ -61,37 +144,7 @@ const app = {
         });
     },
 
-    populateArchiveDropdown: () => {
-        const select = document.getElementById('archiveSelect');
-        app.studentsDB.forEach(student => {
-            const option = document.createElement('option');
-            option.value = student.id;
-            option.textContent = `${student.name} (${student.class})`;
-            select.appendChild(option);
-        });
-
-        select.addEventListener('change', (e) => {
-            const id = e.target.value;
-            if(id) app.loadStudentProfile(id);
-        });
-    },
-
-    loadStudentProfile: (id) => {
-        const student = app.studentsDB.find(s => s.id == id);
-        if(!student) return;
-
-        document.getElementById('studentName').value = student.name;
-        document.getElementById('studentClass').value = student.class;
-        document.getElementById('studentGender').value = student.gender;
-        document.getElementById('regNumber').value = student.regNumber;
-        
-        if(student.photo) {
-            document.getElementById('photoPreview').src = `student_images/${student.photo}`;
-        }
-    },
-
     setupEventListeners: () => {
-        // Photo Upload Preview
         document.getElementById('studentPhoto').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -100,7 +153,6 @@ const app = {
             }
         });
 
-        // Populate Comments
         const teachers = document.getElementById('classTeacherComment');
         const principals = document.getElementById('principalComment');
         
@@ -110,7 +162,6 @@ const app = {
         tOptions.forEach(o => teachers.add(new Option(o, o)));
         pOptions.forEach(o => principals.add(new Option(o, o)));
 
-        // PDF Buttons
         document.getElementById('generateReportBtn').addEventListener('click', pdfGenerator.generatePreview);
         document.getElementById('savePdfBtn').addEventListener('click', pdfGenerator.savePDF);
     }
@@ -182,9 +233,11 @@ const scoreManager = {
 
 // 4. PDF GENERATOR
 const pdfGenerator = {
-    // --- HELPER: Draw Image keeping Aspect Ratio ---
+    // --- HELPER: Draw Image keeping Aspect Ratio (FIXED) ---
     drawImageProp: (doc, img, x, y, w, h) => {
-        // Calculate aspect ratio
+        if (!img || !img.width || !img.height) return;
+
+        // Convert dimensions from pixels (img) to mm (jspdf)
         const imgRatio = img.width / img.height;
         const boxRatio = w / h;
         
@@ -204,11 +257,10 @@ const pdfGenerator = {
         const offsetX = x + (w - newW) / 2;
         const offsetY = y + (h - newH) / 2;
 
-        doc.addImage(img, 'PNG', offsetX, offsetY, newW, newH);
-        
-        // Optional: Draw a border around the container to show the area
-        // doc.setDrawColor(200, 200, 200);
-        // doc.rect(x, y, w, h); 
+        if (newW > 0 && newH > 0) {
+            // We use 'JPEG' as the format is generally the safest for data URLs
+            doc.addImage(img, 'JPEG', offsetX, offsetY, newW, newH);
+        }
     },
 
     createPDF: async () => {
@@ -217,16 +269,13 @@ const pdfGenerator = {
         const red = [183, 28, 28]; // Brand Color
         
         // --- 1. HEADER ---
-        // Logo with Aspect Ratio Fix
         try {
             const logoImg = await pdfGenerator.loadImage('latter-glory logo.png');
             if(logoImg) {
-                // Box size: 25x25, Position: 15,10
                 pdfGenerator.drawImageProp(doc, logoImg, 15, 10, 25, 25);
             }
-        } catch(e) { console.log("Logo error"); }
+        } catch(e) { console.warn("Logo file not accessible."); }
 
-        // School Text
         doc.setFont("helvetica", "bold").setFontSize(18).setTextColor(...red);
         doc.text("LATTER GLORY ACADEMY", 45, 20);
         
@@ -238,18 +287,15 @@ const pdfGenerator = {
         doc.line(15, 40, 195, 40);
 
         // --- 2. STUDENT INFO ---
-        // Gray Box
         doc.setFillColor(248, 248, 248);
         doc.rect(15, 45, 180, 35, 'F');
 
-        // Student Photo with Aspect Ratio Fix
+        // Student Photo
         const photoEl = document.getElementById('photoPreview');
         if(photoEl.src && !photoEl.src.includes('base64,R0lGODlh')) {
             try {
-                // We create a temporary Image object to get dimensions for calculation
                 const tempImg = await pdfGenerator.loadImage(photoEl.src);
                 if(tempImg) {
-                    // Box size: 30x30, Position: 160, 47.5
                     pdfGenerator.drawImageProp(doc, tempImg, 160, 47.5, 30, 30);
                 }
             } catch(e) {}
@@ -257,20 +303,20 @@ const pdfGenerator = {
 
         const name = document.getElementById('studentName').value.toUpperCase();
         const sClass = document.getElementById('studentClass').value;
-        const reg = document.getElementById('regNumber').value;
+        const reg = document.getElementById('regNumberSelect').value;
         const gender = document.getElementById('studentGender').value;
 
         doc.setFontSize(10).setFont("helvetica", "bold");
         doc.text("NAME:", 20, 55); doc.setFont("helvetica", "normal").text(name, 50, 55);
         doc.setFont("helvetica", "bold").text("CLASS:", 20, 62); doc.setFont("helvetica", "normal").text(sClass, 50, 62);
         doc.setFont("helvetica", "bold").text("GENDER:", 20, 69); doc.setFont("helvetica", "normal").text(gender, 50, 69);
-        doc.setFont("helvetica", "bold").text("REG NO:", 90, 62); doc.setFont("helvetica", "normal").text(reg, 110, 62);
+        doc.setFont("helvetica", "bold").text("REG NO:", 90, 62); doc.setFont("helvetica", "normal").text(reg, 110, 62); 
         
-        // UPDATED TERM HERE
+        // Term is FIXED from CONFIG
         doc.setFont("helvetica", "bold").text("TERM:", 90, 69); 
         doc.setFont("helvetica", "normal").text(CONFIG.currentTerm, 110, 69);
 
-        // --- 3. ACADEMIC TABLE ---
+        // --- 3. ACADEMIC TABLE & METRICS ---
         let y = 90;
         doc.setFillColor(...red);
         doc.rect(15, y, 180, 8, 'F');
@@ -285,13 +331,11 @@ const pdfGenerator = {
         doc.setTextColor(0, 0, 0).setFont("helvetica", "normal");
         
         const rows = document.querySelectorAll('.subject-row');
-        
-        // --- METRICS COUNTERS ---
         let totalScore = 0;
         let subjectsTaken = 0;
-        let subjectsPassed = 0; // A, B, C, D
-        let subjectsFailed = 0; // F
-        let distinctions = 0;   // A
+        let subjectsPassed = 0; 
+        let subjectsFailed = 0; 
+        let distinctions = 0;   // Grade A
 
         rows.forEach((row, i) => {
             if(i % 2 !== 0) { doc.setFillColor(245, 245, 245); doc.rect(15, y, 180, 7, 'F'); }
@@ -310,7 +354,6 @@ const pdfGenerator = {
                 doc.text(total, 150, y+5);
                 doc.text(grade, 175, y+5);
                 
-                // Update Metrics
                 const numTotal = parseInt(total);
                 totalScore += numTotal;
                 subjectsTaken++;
@@ -328,20 +371,17 @@ const pdfGenerator = {
             }
         });
 
-        // --- 4. PERFORMANCE METRICS GRID ---
+        // --- 4. PERFORMANCE METRICS GRID (UPDATED) ---
         y += 5;
-        // Draw a container for metrics
         doc.setDrawColor(200, 200, 200);
         doc.setFillColor(255, 255, 255);
         
-        // Define Grid Boxes
         const boxY = y;
         const boxH = 15;
-        const boxW = 35; // width of each metric box
+        const boxW = 35; 
         const startX = 20;
         const gap = 5;
 
-        // Helper to draw metric box
         const drawMetric = (label, value, xPos, color = [0,0,0]) => {
             doc.setDrawColor(220, 220, 220);
             doc.setFillColor(250, 250, 250);
@@ -355,15 +395,14 @@ const pdfGenerator = {
         };
 
         const average = subjectsTaken > 0 ? (totalScore / subjectsTaken).toFixed(1) : "0.0";
-        const percentage = subjectsTaken > 0 ? ((subjectsPassed / subjectsTaken) * 100).toFixed(0) + "%" : "0%";
 
         drawMetric("TOTAL SUBJECTS", subjectsTaken, startX);
-        drawMetric("PASSED", subjectsPassed, startX + boxW + gap, [0, 128, 0]); // Green
-        drawMetric("FAILED", subjectsFailed, startX + (boxW + gap)*2, [200, 0, 0]); // Red
-        drawMetric("DISTINCTIONS", distinctions, startX + (boxW + gap)*3, [0, 0, 200]); // Blue
-        drawMetric("AVERAGE", average, startX + (boxW + gap)*4);
+        drawMetric("PASSED (D & Above)", subjectsPassed, startX + boxW + gap, [0, 128, 0]); 
+        drawMetric("FAILED (F)", subjectsFailed, startX + (boxW + gap)*2, [200, 0, 0]); 
+        drawMetric("DISTINCTIONS (A)", distinctions, startX + (boxW + gap)*3, [0, 0, 200]); 
+        drawMetric("AVG SCORE", average, startX + (boxW + gap)*4);
 
-        y += 25; // Move down past the metrics boxes
+        y += 25; 
 
         // --- 5. REMARKS & SIGNATURES ---
         doc.setTextColor(0, 0, 0).setFontSize(10);
