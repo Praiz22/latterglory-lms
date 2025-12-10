@@ -1,18 +1,370 @@
 [
   {
-    "id": 1,
-    "name": "AKANGBE PHILIP",
-    "class": "JSS1",
+    "name": "ADEMOLA DAVID",
+    "class": "JSS 1",
     "gender": "Male",
-    "regNumber": "J1/24/01/001",
-    "photo": "akangbe_philip.jpg"
+    "photo": "ademola_david.jpg",
+    "id": "ST001",
+    "regNumber": "LGA/25/J1/001"
   },
   {
-    "id": 2,
-    "name": "ADEBAYO GRACE",
-    "class": "JSS1",
+    "name": "MAKANJUOLA GOD'SWILL",
+    "class": "JSS 1",
+    "gender": "Male",
+    "photo": "makanjuola_god'swill.jpg",
+    "id": "ST002",
+    "regNumber": "LGA/25/J1/002"
+  },
+  {
+    "name": "OGUNLEKE PEACE",
+    "class": "JSS 1",
+    "gender": "Male",
+    "photo": "ogunleke_peace.jpg",
+    "id": "ST003",
+    "regNumber": "LGA/25/J1/003"
+  },
+  {
+    "name": "OGUNMODEDE NIFEMI",
+    "class": "JSS 1",
+    "gender": "Male",
+    "photo": "ogunmodede_nifemi.jpg",
+    "id": "ST004",
+    "regNumber": "LGA/25/J1/004"
+  },
+  {
+    "name": "OLAYODE JOHN",
+    "class": "JSS 1",
+    "gender": "Male",
+    "photo": "olayode_john.jpg",
+    "id": "ST005",
+    "regNumber": "LGA/25/J1/005"
+  },
+  {
+    "name": "ADEBOWALE ISRAEL",
+    "class": "JSS 1",
+    "gender": "Male",
+    "photo": "adebowale_israel.jpg",
+    "id": "ST006",
+    "regNumber": "LGA/25/J1/006"
+  },
+  {
+    "name": "ADEBAYO OLAMIDE",
+    "class": "JSS 1",
     "gender": "Female",
-    "regNumber": "J1/24/01/002",
-    "photo": "adebayo_grace.jpg"
+    "photo": "adebayo_olamide.jpg",
+    "id": "ST007",
+    "regNumber": "LGA/25/J1/007"
+  },
+  {
+    "name": "ADEWALE OLUWATUMININU",
+    "class": "JSS 1",
+    "gender": "Female",
+    "photo": "adewale_oluwatumininu.jpg",
+    "id": "ST008",
+    "regNumber": "LGA/25/J1/008"
+  },
+  {
+    "name": "AKANDE MERCY",
+    "class": "JSS 1",
+    "gender": "Female",
+    "photo": "akande_mercy.jpg",
+    "id": "ST009",
+    "regNumber": "LGA/25/J1/009"
+  },
+  {
+    "name": "ARIYO REBECCA",
+    "class": "JSS 1",
+    "gender": "Female",
+    "photo": "ariyo_rebecca.jpg",
+    "id": "ST010",
+    "regNumber": "LGA/25/J1/010"
+  },
+  {
+    "name": "AWOLOWO ENIOLA",
+    "class": "JSS 1",
+    "gender": "Female",
+    "photo": "awolowo_eniola.jpg",
+    "id": "ST011",
+    "regNumber": "LGA/25/J1/011"
+  },
+  {
+    "name": "OYEGBILE ESTHER",
+    "class": "JSS 1",
+    "gender": "Female",
+    "photo": "oyegbile_esther.jpg",
+    "id": "ST012",
+    "regNumber": "LGA/25/J1/012"
+  },
+  {
+    "name": "OKANLAWON OLAMIDE",
+    "class": "JSS 1",
+    "gender": "Female",
+    "photo": "okanlawon_olamide.jpg",
+    "id": "ST013",
+    "regNumber": "LGA/25/J1/013"
+  },
+  {
+    "name": "SULAIMON AFISAT",
+    "class": "JSS 1",
+    "gender": "Female",
+    "photo": "sulaimon_afisat.jpg",
+    "id": "ST014",
+    "regNumber": "LGA/25/J1/014"
+  },
+  {
+    "name": "AKANGBE PHILIP",
+    "class": "JSS 2",
+    "gender": "Male",
+    "photo": "akangbe_philip.jpg",
+    "id": "ST015",
+    "regNumber": "LGA/25/J2/015"
+  },
+  {
+    "name": "OLABODE PROMISE",
+    "class": "JSS 2",
+    "gender": "Male",
+    "photo": "olabode_promise.jpg",
+    "id": "ST016",
+    "regNumber": "LGA/25/J2/016"
+  },
+  {
+    "name": "ABDULYEKEEN RODIAT",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "abdulyekeen_rodiat.jpg",
+    "id": "ST017",
+    "regNumber": "LGA/25/J2/017"
+  },
+  {
+    "name": "ADEGBILE PRINCESS",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "adegbile_princess.jpg",
+    "id": "ST018",
+    "regNumber": "LGA/25/J2/018"
+  },
+  {
+    "name": "ADEWOLE NAOMI",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "adewole_naomi.jpg",
+    "id": "ST019",
+    "regNumber": "LGA/25/J2/019"
+  },
+  {
+    "name": "AKANJI RACHAEL",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "akanji_rachael.jpg",
+    "id": "ST020",
+    "regNumber": "LGA/25/J2/020"
+  },
+  {
+    "name": "EMMANUEL ADURAGBEMI",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "emmanuel_aduragbemi.jpg",
+    "id": "ST021",
+    "regNumber": "LGA/25/J2/021"
+  },
+  {
+    "name": "GBEMISOYE MARY",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "gbemisoye_mary.jpg",
+    "id": "ST022",
+    "regNumber": "LGA/25/J2/022"
+  },
+  {
+    "name": "IDOGBE BOLUWATIFE",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "idogbe_boluwatife.jpg",
+    "id": "ST023",
+    "regNumber": "LGA/25/J2/023"
+  },
+  {
+    "name": "OLADIPUPO FADESEWA",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "oladipupo_fadesewa.jpg",
+    "id": "ST024",
+    "regNumber": "LGA/25/J2/024"
+  },
+  {
+    "name": "ABISOYE FAWAS",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "abisoye_fawas.jpg",
+    "id": "ST025",
+    "regNumber": "LGA/25/J3/025"
+  },
+  {
+    "name": "ADEAGBO SAMUEL",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "adeagbo_samuel.jpg",
+    "id": "ST026",
+    "regNumber": "LGA/25/J3/026"
+  },
+  {
+    "name": "ADEGBOYEGA MERCY",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "adegboyega_mercy.jpg",
+    "id": "ST027",
+    "regNumber": "LGA/25/J3/027"
+  },
+  {
+    "name": "ADEMOLA AYOMIDE",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "ademola_ayomide.jpg",
+    "id": "ST028",
+    "regNumber": "LGA/25/J3/028"
+  },
+  {
+    "name": "FAGBOLA AYOMIDE",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "fagbola_ayomide.jpg",
+    "id": "ST029",
+    "regNumber": "LGA/25/J3/029"
+  },
+  {
+    "name": "OGUNMODEDE MICHAEL",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "ogunmodede_michael.jpg",
+    "id": "ST030",
+    "regNumber": "LGA/25/J3/030"
+  },
+  {
+    "name": "OLUDELE SAMUEL",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "oludele_samuel.jpg",
+    "id": "ST031",
+    "regNumber": "LGA/25/J3/031"
+  },
+  {
+    "name": "OLABISI ABIODUN",
+    "class": "JSS 3",
+    "gender": "Male",
+    "photo": "olabisi_abiodun.jpg",
+    "id": "ST032",
+    "regNumber": "LGA/25/J3/032"
+  },
+  {
+    "name": "ADEOYE VICTORIA",
+    "class": "JSS 3",
+    "gender": "Female",
+    "photo": "adeoye_victoria.jpg",
+    "id": "ST033",
+    "regNumber": "LGA/25/J3/033"
+  },
+  {
+    "name": "OLUSOLA GLORY",
+    "class": "JSS 3",
+    "gender": "Female",
+    "photo": "olusola_glory.jpg",
+    "id": "ST034",
+    "regNumber": "LGA/25/J3/034"
+  },
+  {
+    "name": "OJEDIRAN LEAH",
+    "class": "JSS 3",
+    "gender": "Female",
+    "photo": "ojediran_leah.jpg",
+    "id": "ST035",
+    "regNumber": "LGA/25/J3/035"
+  },
+  {
+    "name": "EMMANUEL TAIWO",
+    "class": "SSS 1",
+    "gender": "Male",
+    "photo": "emmanuel_taiwo.jpg",
+    "id": "ST036",
+    "regNumber": "LGA/25/S1/036"
+  },
+  {
+    "name": "ADEGBOLA PRAISE",
+    "class": "SSS 1",
+    "gender": "Female",
+    "photo": "adegbola_praise.jpg",
+    "id": "ST037",
+    "regNumber": "LGA/25/S1/037"
+  },
+  {
+    "name": "ADEWUSI MARY",
+    "class": "SSS 1",
+    "gender": "Female",
+    "photo": "adewusi_mary.jpg",
+    "id": "ST038",
+    "regNumber": "LGA/25/S1/038"
+  },
+  {
+    "name": "FASOLA FAVOUR",
+    "class": "SSS 1",
+    "gender": "Female",
+    "photo": "fasola_favour.jpg",
+    "id": "ST039",
+    "regNumber": "LGA/25/S1/039"
+  },
+  {
+    "name": "OGUNNIYI ENIOLA",
+    "class": "SSS 1",
+    "gender": "Female",
+    "photo": "ogunniyi_eniola.jpg",
+    "id": "ST040",
+    "regNumber": "LGA/25/S1/040"
+  },
+  {
+    "name": "MAKINDE ELIJAH",
+    "class": "SSS 2",
+    "gender": "Male",
+    "photo": "makinde_elijah.jpg",
+    "id": "ST041",
+    "regNumber": "LGA/25/S2/041"
+  },
+  {
+    "name": "GBEMISOYE ALEX",
+    "class": "SSS 2",
+    "gender": "Male",
+    "photo": "gbemisoye_alex.jpg",
+    "id": "ST042",
+    "regNumber": "LGA/25/S2/042"
+  },
+  {
+    "name": "OJO ISAIAH",
+    "class": "SSS 2",
+    "gender": "Male",
+    "photo": "ojo_isaiah.jpg",
+    "id": "ST043",
+    "regNumber": "LGA/25/S2/043"
+  },
+  {
+    "name": "OLADOKUN PEACE",
+    "class": "SSS 2",
+    "gender": "Male",
+    "photo": "oladokun_peace.jpg",
+    "id": "ST044",
+    "regNumber": "LGA/25/S2/044"
+  },
+  {
+    "name": "YAKUB ABDULRASAQ",
+    "class": "SSS 2",
+    "gender": "Male",
+    "photo": "yakub_abdulrasaq.jpg",
+    "id": "ST045",
+    "regNumber": "LGA/25/S2/045"
+  },
+  {
+    "name": "JOKOTOYE MARY",
+    "class": "SSS 2",
+    "gender": "Female",
+    "photo": "jokotoye_mary.jpg",
+    "id": "ST046",
+    "regNumber": "LGA/25/S2/046"
   }
 ]
