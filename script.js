@@ -1,6 +1,6 @@
 /**
  * LATTER GLORY ACADEMY RESULT SYSTEM
- * FINAL PRODUCTION VERSION: Integrated with External JSON Database
+ * FINAL PRODUCTION VERSION: Integrated with students.json, Class Modal, and new Reg No format (LGA/YY/CLASS_ABBR/XXX)
  */
 
 // 1. CONFIGURATION
@@ -34,7 +34,8 @@ const app = {
                 app.studentsDB = await response.json();
                 console.log(`[DB] Successfully loaded ${app.studentsDB.length} students from students.json.`);
             } else {
-                console.warn("[DB] students.json not found or failed to load. Running without student archive.");
+                // If loading fails, still allow manual entry
+                console.warn("[DB] students.json not found or failed to load. Proceeding with manual entry option only.");
             }
         } catch (e) {
             console.error("[DB ERROR] Failed to fetch students.json:", e);
@@ -43,13 +44,16 @@ const app = {
         // Add initial subjects for a fresh result sheet
         scoreManager.addSubject('English Language');
         scoreManager.addSubject('Mathematics');
+        
+        // Pre-populate dropdowns for quick access
+        app.populateCommentDropdowns();
     },
 
     verifyAdmin: () => {
         const key = document.getElementById("adminKeyInput").value.trim();
         if (key === CONFIG.adminKey) {
-            document.getElementById("authModal").style.display = "none";
-            document.getElementById("classSelectModal").classList.remove("d-none");
+            document.getElementById("authModal").classList.add("d-none"); // Hide auth modal
+            document.getElementById("classSelectModal").classList.remove("d-none"); // Show class modal
             app.setupClassModalEvents();
         } else {
             const err = document.getElementById("authError");
@@ -62,6 +66,9 @@ const app = {
         const classSelect = document.getElementById('classSelectInput');
         const loadBtn = document.getElementById('loadClassBtn');
         
+        // Use 'd-none' instead of style.display = "none" for Bootstrap classes
+        document.getElementById("authModal").classList.add("d-none");
+
         classSelect.addEventListener('change', () => {
             loadBtn.disabled = classSelect.value === "";
         });
@@ -71,7 +78,7 @@ const app = {
         const selectedClassValue = document.getElementById('classSelectInput').value;
         if (!selectedClassValue) return;
 
-        app.selectedClass = selectedClassValue;
+        app.selectedClass = selectedClassValue.replace(/\s/g, ''); // Ensure format is JSS1, SSS3
         
         // Update the main form's class field
         document.getElementById('studentClass').value = selectedClassValue;
@@ -79,8 +86,8 @@ const app = {
         document.getElementById("classSelectModal").classList.add("d-none");
         document.getElementById("mainContent").classList.remove("d-none");
         
-        // This is the core function that filters the DB and populates the dropdown
-        app.populateRegNumberDropdown(selectedClassValue);
+        // Filter DB and populate the dropdown
+        app.populateRegNumberDropdown(app.selectedClass);
     },
 
     populateRegNumberDropdown: (className) => {
@@ -92,6 +99,7 @@ const app = {
         const filteredStudents = app.studentsDB.filter(s => s.class === className);
         
         if (filteredStudents.length > 0) {
+            filteredStudents.sort((a, b) => a.regNumber.localeCompare(b.regNumber)); // Sort by Reg No
             filteredStudents.forEach(student => {
                 const option = document.createElement('option');
                 option.value = student.regNumber;
@@ -100,7 +108,6 @@ const app = {
             });
             regSelect.disabled = false;
         } else {
-            // Option for manually entering a student not in the JSON file
             const option = document.createElement('option');
             option.value = "new_entry";
             option.textContent = `No students found for ${className}. Select for Manual Entry.`;
@@ -128,7 +135,10 @@ const app = {
     },
 
     fillStudentData: (student) => {
-        document.getElementById('studentClass').value = app.selectedClass || student.class;
+        // Class name from the JSON is like 'JSS1', but we display 'JSS 1'
+        const displayClass = student.class.replace(/(\w{3})(\d)/, '$1 $2');
+        
+        document.getElementById('studentClass').value = displayClass || app.selectedClass;
         document.getElementById('studentName').value = student.name;
         document.getElementById('studentGender').value = student.gender;
         
@@ -137,14 +147,23 @@ const app = {
             // Assumes photo is in the 'student_images' folder
             document.getElementById('photoPreview').src = `student_images/${student.photo}`; 
         } else {
+            // Placeholder for students without a photo path
             document.getElementById('photoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
         }
+        
+        // Clear scores table for new student
+        document.getElementById('subjectsBody').innerHTML = '';
+        scoreManager.addSubject('English Language');
+        scoreManager.addSubject('Mathematics');
     },
 
     clearStudentData: () => {
         document.getElementById('studentName').value = '';
         document.getElementById('studentGender').value = 'Male';
-        document.getElementById('studentClass').value = app.selectedClass || 'JSS1';
+        
+        // Class remains the selected class
+        document.getElementById('studentClass').value = app.selectedClass.replace(/(\w{3})(\d)/, '$1 $2'); 
+        
         document.getElementById('photoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
         
         // Clear scores table for new entry
@@ -160,6 +179,17 @@ const app = {
         });
     },
 
+    populateCommentDropdowns: () => {
+        const teachers = document.getElementById('classTeacherComment');
+        const principals = document.getElementById('principalComment');
+        
+        const tOptions = ["Excellent result. Keep it up!", "Good performance. Room for improvement.", "He is a good boy but plays too much.", "Needs to sit up and focus.", "An obedient student, with satisfactory results."];
+        const pOptions = ["Outstanding performance. Promoted to next class.", "Promoted to next class.", "Advised to repeat the class.", "Good result.", "Satisfactory performance."];
+
+        tOptions.forEach(o => teachers.add(new Option(o, o)));
+        pOptions.forEach(o => principals.add(new Option(o, o)));
+    },
+
     setupEventListeners: () => {
         document.getElementById('studentPhoto').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
@@ -169,21 +199,12 @@ const app = {
             }
         });
 
-        const teachers = document.getElementById('classTeacherComment');
-        const principals = document.getElementById('principalComment');
-        
-        const tOptions = ["Excellent result.", "Good performance.", "He is a good boy but plays too much.", "Needs to sit up.", "An obedient student."];
-        const pOptions = ["Outstanding performance.", "Promoted to next class.", "Advised to repeat.", "Good result.", "Satisfactory."];
-
-        tOptions.forEach(o => teachers.add(new Option(o, o)));
-        pOptions.forEach(o => principals.add(new Option(o, o)));
-
         document.getElementById('generateReportBtn').addEventListener('click', pdfGenerator.generatePreview);
         document.getElementById('savePdfBtn').addEventListener('click', pdfGenerator.savePDF);
     }
 };
 
-// 3. SCORE MANAGER (No changes needed, handles score calculation)
+// 3. SCORE MANAGER (Handles all score calculations and grade assignments)
 const scoreManager = {
     init: () => {},
 
@@ -209,7 +230,7 @@ const scoreManager = {
             <td class="text-center fw-bold total-score">-</td>
             <td class="text-center fw-bold grade">-</td>
             <td class="text-center">
-                <i class="fas fa-trash-alt text-danger" style="cursor:pointer" onclick="this.closest('tr').remove()"></i>
+                <i class="fas fa-trash-alt text-danger" style="cursor:pointer" onclick="this.closest('tr').remove(); pdfGenerator.updateMetrics()"></i>
             </td>
         `;
         tbody.appendChild(tr);
@@ -224,8 +245,9 @@ const scoreManager = {
         select.addEventListener('change', () => {
             if(select.value === 'other') customInput.classList.remove('d-none');
             else customInput.classList.add('d-none');
+            scoreManager.calculate(row);
         });
-
+        customInput.addEventListener('input', () => scoreManager.calculate(row));
         inputs.forEach(inp => inp.addEventListener('input', () => scoreManager.calculate(row)));
     },
 
@@ -244,12 +266,15 @@ const scoreManager = {
 
         row.querySelector('.total-score').innerText = total;
         row.querySelector('.grade').innerText = grade;
+        
+        // Recalculate metrics when any score changes
+        pdfGenerator.updateMetrics();
     }
 };
 
-// 4. PDF GENERATOR (No functional changes needed here - image aspect ratio fix is retained)
+// 4. PDF GENERATOR (Handles PDF creation and UI metrics)
 const pdfGenerator = {
-    // Helper function for aspect ratio scaling (retained fix)
+    // Helper function for aspect ratio scaling (ensures photo looks good)
     drawImageProp: (doc, img, x, y, w, h) => {
         if (!img || !img.width || !img.height) return;
 
@@ -274,10 +299,51 @@ const pdfGenerator = {
         }
     },
 
+    // Function to calculate metrics from score table (used for the PDF)
+    calculateMetrics: () => {
+        const rows = document.querySelectorAll('.subject-row');
+        let totalScore = 0;
+        let subjectsTaken = 0;
+        let subjectsPassed = 0; 
+        let subjectsFailed = 0; 
+        let distinctions = 0;   
+
+        rows.forEach(row => {
+            const total = row.querySelector('.total-score').innerText;
+            const grade = row.querySelector('.grade').innerText;
+
+            if (total !== '-') {
+                const numTotal = parseInt(total);
+                totalScore += numTotal;
+                subjectsTaken++;
+                
+                if (grade === 'A') {
+                    distinctions++;
+                    subjectsPassed++;
+                } else if (['B', 'C', 'D'].includes(grade)) {
+                    subjectsPassed++;
+                } else if (grade === 'F') {
+                    subjectsFailed++;
+                }
+            }
+        });
+        
+        const average = subjectsTaken > 0 ? (totalScore / subjectsTaken).toFixed(1) : "0.0";
+
+        return { totalScore, subjectsTaken, subjectsPassed, subjectsFailed, distinctions, average };
+    },
+
+    // Placeholder for metric update (not strictly needed for this file but good practice)
+    updateMetrics: () => {
+        // In this setup, metrics are calculated directly in the PDF generation, 
+        // but this function can be used to update a visible dashboard if needed.
+    },
+
     createPDF: async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const red = [183, 28, 28]; // Brand Color
+        const metrics = pdfGenerator.calculateMetrics();
         
         // --- 1. HEADER (Logo and school details) ---
         try {
@@ -303,7 +369,7 @@ const pdfGenerator = {
 
         // Student Photo
         const photoEl = document.getElementById('photoPreview');
-        if(photoEl.src && !photoEl.src.includes('base64,R0lGODlh')) {
+        if(photoEl.src && !photoEl.src.includes('base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=')) {
             try {
                 const tempImg = await pdfGenerator.loadImage(photoEl.src);
                 if(tempImg) {
@@ -341,42 +407,32 @@ const pdfGenerator = {
         doc.setTextColor(0, 0, 0).setFont("helvetica", "normal");
         
         const rows = document.querySelectorAll('.subject-row');
-        let totalScore = 0;
-        let subjectsTaken = 0;
-        let subjectsPassed = 0; 
-        let subjectsFailed = 0; 
-        let distinctions = 0;   
+        
 
         rows.forEach((row, i) => {
-            if(i % 2 !== 0) { doc.setFillColor(245, 245, 245); doc.rect(15, y, 180, 7, 'F'); }
             
             const select = row.querySelector('.subject-select');
-            const subName = select.value === 'other' ? row.querySelector('.custom-subject').value : select.value;
+            const customInput = row.querySelector('.custom-subject');
+            let subName = select.value;
+
+            if(select.value === 'other') {
+                subName = customInput.value;
+            }
+            
             const ca = row.querySelector('.ca-score').value;
             const exam = row.querySelector('.exam-score').value;
             const total = row.querySelector('.total-score').innerText;
             const grade = row.querySelector('.grade').innerText;
 
             if(subName && total !== '-') {
+                if(i % 2 !== 0) { doc.setFillColor(245, 245, 245); doc.rect(15, y, 180, 7, 'F'); }
+                
                 doc.text(subName, 20, y+5);
                 doc.text(ca, 110, y+5);
                 doc.text(exam, 130, y+5);
                 doc.text(total, 150, y+5);
                 doc.text(grade, 175, y+5);
                 
-                const numTotal = parseInt(total);
-                totalScore += numTotal;
-                subjectsTaken++;
-                
-                if (grade === 'A') {
-                    distinctions++;
-                    subjectsPassed++;
-                } else if (['B', 'C', 'D'].includes(grade)) {
-                    subjectsPassed++;
-                } else {
-                    subjectsFailed++;
-                }
-
                 y += 7;
             }
         });
@@ -404,13 +460,11 @@ const pdfGenerator = {
             doc.text(String(value), xPos + boxW/2, boxY + 11, {align: 'center'});
         };
 
-        const average = subjectsTaken > 0 ? (totalScore / subjectsTaken).toFixed(1) : "0.0";
-
-        drawMetric("TOTAL SUBJECTS", subjectsTaken, startX);
-        drawMetric("PASSED (D & Above)", subjectsPassed, startX + boxW + gap, [0, 128, 0]); 
-        drawMetric("FAILED (F)", subjectsFailed, startX + (boxW + gap)*2, [200, 0, 0]); 
-        drawMetric("DISTINCTIONS (A)", distinctions, startX + (boxW + gap)*3, [0, 0, 200]); 
-        drawMetric("AVG SCORE", average, startX + (boxW + gap)*4);
+        drawMetric("TOTAL SUBJECTS", metrics.subjectsTaken, startX);
+        drawMetric("PASSED (D & Above)", metrics.subjectsPassed, startX + boxW + gap, [0, 128, 0]); 
+        drawMetric("FAILED (F)", metrics.subjectsFailed, startX + (boxW + gap)*2, [200, 0, 0]); 
+        drawMetric("DISTINCTIONS (A)", metrics.distinctions, startX + (boxW + gap)*3, [0, 0, 200]); 
+        drawMetric("AVG SCORE", metrics.average, startX + (boxW + gap)*4);
 
         y += 25; 
 
@@ -451,6 +505,7 @@ const pdfGenerator = {
         const btn = document.getElementById('generateReportBtn');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        btn.disabled = true;
         
         try {
             const doc = await pdfGenerator.createPDF();
@@ -463,15 +518,25 @@ const pdfGenerator = {
             alert("Error generating PDF. Check console.");
         }
         btn.innerHTML = originalText;
+        btn.disabled = false;
     },
 
     savePDF: async () => {
         const btn = document.getElementById('savePdfBtn');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-        const doc = await pdfGenerator.createPDF();
-        const name = document.getElementById('studentName').value || 'Student';
-        doc.save(`${name.replace(/ /g, '_')}_Result.pdf`);
+        btn.disabled = true;
+        
+        try {
+            const doc = await pdfGenerator.createPDF();
+            const name = document.getElementById('studentName').value || 'Student';
+            doc.save(`${name.replace(/ /g, '_')}_Result.pdf`);
+        } catch (error) {
+            console.error(error);
+            alert("Error saving PDF. Check console.");
+        }
+        
         btn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>Download PDF';
+        btn.disabled = false;
     },
 
     loadImage: (url) => {
