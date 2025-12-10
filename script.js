@@ -1,7 +1,12 @@
+/**
+ * LATTER GLORY ACADEMY RESULT SYSTEM
+ * FINAL PRODUCTION VERSION: Integrated with External JSON Database
+ */
+
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "2025-01-13", // Example date for 2nd term resumption
+    resumptionDate: "2025-01-13", // Date for next term resumption
     currentTerm: "1st Term 2024/2025",
     maxSubjects: 18,
     sampleSubjects: [
@@ -12,9 +17,9 @@ const CONFIG = {
     ]
 };
 
-// 2. APP CONTROLLER
+// 2. APP CONTROLLER (Data Loading and UI Management)
 const app = {
-    studentsDB: [],
+    studentsDB: [], // This will hold the data from your students.json file
     selectedClass: null,
 
     init: async () => {
@@ -22,16 +27,20 @@ const app = {
         app.setupEventListeners();
         scoreManager.init();
         
-        // Load Archive Database
+        // --- CORE CHANGE: Load your students.json from GitHub/Local Folder ---
         try {
             const response = await fetch('students.json');
             if(response.ok) {
                 app.studentsDB = await response.json();
+                console.log(`[DB] Successfully loaded ${app.studentsDB.length} students from students.json.`);
+            } else {
+                console.warn("[DB] students.json not found or failed to load. Running without student archive.");
             }
         } catch (e) {
-            console.warn("Running in static mode. JSON database not found.");
+            console.error("[DB ERROR] Failed to fetch students.json:", e);
         }
         
+        // Add initial subjects for a fresh result sheet
         scoreManager.addSubject('English Language');
         scoreManager.addSubject('Mathematics');
     },
@@ -40,7 +49,6 @@ const app = {
         const key = document.getElementById("adminKeyInput").value.trim();
         if (key === CONFIG.adminKey) {
             document.getElementById("authModal").style.display = "none";
-            // Show the class selection modal next
             document.getElementById("classSelectModal").classList.remove("d-none");
             app.setupClassModalEvents();
         } else {
@@ -71,7 +79,7 @@ const app = {
         document.getElementById("classSelectModal").classList.add("d-none");
         document.getElementById("mainContent").classList.remove("d-none");
         
-        // Load and populate registration numbers for the selected class
+        // This is the core function that filters the DB and populates the dropdown
         app.populateRegNumberDropdown(selectedClassValue);
     },
 
@@ -80,6 +88,7 @@ const app = {
         regSelect.innerHTML = '<option value="">Select Reg No...</option>';
         regSelect.disabled = true;
 
+        // --- FILTER DATABASE BY SELECTED CLASS ---
         const filteredStudents = app.studentsDB.filter(s => s.class === className);
         
         if (filteredStudents.length > 0) {
@@ -91,9 +100,10 @@ const app = {
             });
             regSelect.disabled = false;
         } else {
+            // Option for manually entering a student not in the JSON file
             const option = document.createElement('option');
             option.value = "new_entry";
-            option.textContent = `No students found for ${className}. Manual Entry.`;
+            option.textContent = `No students found for ${className}. Select for Manual Entry.`;
             regSelect.appendChild(option);
             regSelect.disabled = false;
             app.clearStudentData();
@@ -110,6 +120,7 @@ const app = {
              return;
         }
         
+        // Find student based on regNumber selected from the dropdown
         const student = app.studentsDB.find(s => s.regNumber === regNumber);
         if (student) {
             app.fillStudentData(student);
@@ -121,8 +132,12 @@ const app = {
         document.getElementById('studentName').value = student.name;
         document.getElementById('studentGender').value = student.gender;
         
+        // Set photo source from the 'photo' field in the JSON
         if(student.photo) {
-            document.getElementById('photoPreview').src = `student_images/${student.photo}`;
+            // Assumes photo is in the 'student_images' folder
+            document.getElementById('photoPreview').src = `student_images/${student.photo}`; 
+        } else {
+            document.getElementById('photoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
         }
     },
 
@@ -132,6 +147,7 @@ const app = {
         document.getElementById('studentClass').value = app.selectedClass || 'JSS1';
         document.getElementById('photoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
         
+        // Clear scores table for new entry
         document.getElementById('subjectsBody').innerHTML = '';
         scoreManager.addSubject('English Language');
         scoreManager.addSubject('Mathematics');
@@ -167,7 +183,7 @@ const app = {
     }
 };
 
-// 3. SCORE MANAGER
+// 3. SCORE MANAGER (No changes needed, handles score calculation)
 const scoreManager = {
     init: () => {},
 
@@ -231,34 +247,29 @@ const scoreManager = {
     }
 };
 
-// 4. PDF GENERATOR
+// 4. PDF GENERATOR (No functional changes needed here - image aspect ratio fix is retained)
 const pdfGenerator = {
-    // --- HELPER: Draw Image keeping Aspect Ratio (FIXED) ---
+    // Helper function for aspect ratio scaling (retained fix)
     drawImageProp: (doc, img, x, y, w, h) => {
         if (!img || !img.width || !img.height) return;
 
-        // Convert dimensions from pixels (img) to mm (jspdf)
         const imgRatio = img.width / img.height;
         const boxRatio = w / h;
         
         let newW, newH;
 
         if (imgRatio > boxRatio) {
-            // Image is wider than box (fit to width)
             newW = w;
             newH = w / imgRatio;
         } else {
-            // Image is taller than box (fit to height)
             newH = h;
             newW = h * imgRatio;
         }
 
-        // Center the image in the box
         const offsetX = x + (w - newW) / 2;
         const offsetY = y + (h - newH) / 2;
 
         if (newW > 0 && newH > 0) {
-            // We use 'JPEG' as the format is generally the safest for data URLs
             doc.addImage(img, 'JPEG', offsetX, offsetY, newW, newH);
         }
     },
@@ -268,7 +279,7 @@ const pdfGenerator = {
         const doc = new jsPDF();
         const red = [183, 28, 28]; // Brand Color
         
-        // --- 1. HEADER ---
+        // --- 1. HEADER (Logo and school details) ---
         try {
             const logoImg = await pdfGenerator.loadImage('latter-glory logo.png');
             if(logoImg) {
@@ -286,7 +297,7 @@ const pdfGenerator = {
         doc.setDrawColor(200, 200, 200);
         doc.line(15, 40, 195, 40);
 
-        // --- 2. STUDENT INFO ---
+        // --- 2. STUDENT INFO (Bio Data) ---
         doc.setFillColor(248, 248, 248);
         doc.rect(15, 45, 180, 35, 'F');
 
@@ -312,7 +323,6 @@ const pdfGenerator = {
         doc.setFont("helvetica", "bold").text("GENDER:", 20, 69); doc.setFont("helvetica", "normal").text(gender, 50, 69);
         doc.setFont("helvetica", "bold").text("REG NO:", 90, 62); doc.setFont("helvetica", "normal").text(reg, 110, 62); 
         
-        // Term is FIXED from CONFIG
         doc.setFont("helvetica", "bold").text("TERM:", 90, 69); 
         doc.setFont("helvetica", "normal").text(CONFIG.currentTerm, 110, 69);
 
@@ -335,7 +345,7 @@ const pdfGenerator = {
         let subjectsTaken = 0;
         let subjectsPassed = 0; 
         let subjectsFailed = 0; 
-        let distinctions = 0;   // Grade A
+        let distinctions = 0;   
 
         rows.forEach((row, i) => {
             if(i % 2 !== 0) { doc.setFillColor(245, 245, 245); doc.rect(15, y, 180, 7, 'F'); }
@@ -371,7 +381,7 @@ const pdfGenerator = {
             }
         });
 
-        // --- 4. PERFORMANCE METRICS GRID (UPDATED) ---
+        // --- 4. PERFORMANCE METRICS GRID ---
         y += 5;
         doc.setDrawColor(200, 200, 200);
         doc.setFillColor(255, 255, 255);
