@@ -14,7 +14,7 @@
     <div id="authModal" class="modal-backdrop">
         <div class="glass-card auth-card">
             <div class="logo-circle mb-3">
-                <img src="latter-glory logo.png" alt="Logo" onerror="this.style.display='none'">
+                <img src="latter-glory logo.png" alt="Logo" onerror="document.getElementById('fallbackIcon').style.display='block'; this.style.display='none'">
                 <i class="fas fa-school text-danger fa-2x" style="display:none;" id="fallbackIcon"></i>
             </div>
             <h4 class="brand-red fw-bold">Admin Access</h4>
@@ -28,6 +28,26 @@
             </p>
         </div>
     </div>
+    
+    <div id="classSelectModal" class="modal-backdrop d-none">
+        <div class="glass-card auth-card">
+            <h4 class="brand-red fw-bold">Select Class for Entry</h4>
+            <p class="text-muted small">Choose the class whose results you are recording.</p>
+            <select id="classSelectInput" class="form-select custom-input text-center">
+                <option value="">-- Select Class --</option>
+                <option value="JSS1">JSS 1</option>
+                <option value="JSS2">JSS 2</option>
+                <option value="JSS3">JSS 3</option>
+                <option value="SSS1">SSS 1</option>
+                <option value="SSS2">SSS 2</option>
+                <option value="SSS3">SSS 3</option>
+            </select>
+            <button onclick="app.loadClassData()" class="btn btn-brand w-100 mt-3" id="loadClassBtn" disabled>
+                Load Students <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+        </div>
+    </div>
+
 
     <div id="mainContent" class="d-none">
         <nav class="navbar glass-nav sticky-top mb-4">
@@ -51,11 +71,11 @@
                         
                         <div class="archive-box p-3 mb-3">
                             <label class="form-label text-xs fw-bold text-uppercase text-danger mb-1">
-                                <i class="fas fa-database me-1"></i> Load from Archive
+                                <i class="fas fa-list me-1"></i> Select Registration Number
                             </label>
-                            <select id="archiveSelect" class="form-select custom-input">
-                                <option value="">Select Student...</option>
-                                </select>
+                            <select id="regNumberSelect" class="form-select custom-input" disabled>
+                                <option value="">Select Reg No...</option>
+                            </select>
                         </div>
 
                         <hr class="text-muted opacity-25">
@@ -93,10 +113,6 @@
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label text-muted small fw-bold">REG NUMBER</label>
-                                <input type="text" id="regNumber" class="form-control custom-input" placeholder="e.g. J1/24/001">
                             </div>
                         </div>
                     </div>
@@ -171,4 +187,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
