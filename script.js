@@ -6,8 +6,8 @@
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "2026-01-05", // Date for next term resumption
-    currentTerm: "1st Term 2025/2026",
+    resumptionDate: "2025-01-05", // Date for next term resumption
+    currentTerm: "1st Term 2024/2025",
     maxSubjects: 18,
     sampleSubjects: [
         "English Language", "Mathematics", "N.V", "P.V.S", "B.S.T",
@@ -188,8 +188,24 @@ const app = {
         
         // Set photo source from the 'photo' field in the JSON
         if(student.photo) {
-            // Assumes photo is in the 'student_images' folder
-            document.getElementById('photoPreview').src = `student_images/${student.photo}`; 
+            // --- START OF FIX ---
+            let photoFileName = student.photo; 
+            
+            // 1. Find the last dot to identify the extension
+            const lastDotIndex = photoFileName.lastIndexOf('.');
+            
+            if (lastDotIndex > 0) {
+                // 2. Separate name and extension
+                const namePart = photoFileName.substring(0, lastDotIndex);
+                const extPart = photoFileName.substring(lastDotIndex + 1);
+                
+                // 3. Reconstruct the filename with the extension forced to uppercase (e.g., .jpg -> .JPG)
+                photoFileName = `${namePart}.${extPart.toUpperCase()}`;
+            }
+            
+            // Set the UI source using the modified filename
+            document.getElementById('photoPreview').src = `student_images/${photoFileName}`;
+            // --- END OF FIX ---
         } else {
             // Placeholder for students without a photo path
             document.getElementById('photoPreview').src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
@@ -227,7 +243,7 @@ const app = {
         const teachers = document.getElementById('classTeacherComment');
         const principals = document.getElementById('principalComment');
         
-        const tOptions = ["Excellent result. Keep it up!", "Good performance. Room for improvement.","She is a good girl but she plays too much", "He is a good boy but plays too much.", "Needs to sit up and focus.", "An obedient student, with satisfactory results."];
+        const tOptions = ["Excellent result. Keep it up!", "Good performance. Room for improvement.", "He is a good boy but plays too much.", "Needs to sit up and focus.", "An obedient student, with satisfactory results."];
         const pOptions = ["Outstanding performance. Promoted to next class.", "Promoted to next class.", "Advised to repeat the class.", "Good result.", "Satisfactory performance."];
 
         tOptions.forEach(o => teachers.add(new Option(o, o)));
@@ -536,7 +552,7 @@ const pdfGenerator = {
         doc.line(20, y, 70, y); doc.text("Teacher's Signature", 25, y+5);
         doc.line(130, y, 180, y); doc.text("Principal's Signature", 135, y+5);
 
-        // --- 6. FOOTER/WATERMARK (UPDATED) ---
+        // --- 6. FOOTER/WATERMARK ---
         let footerY = 280; // Start position near the bottom
 
         // 6.1. Alteration Warning (Bold)
@@ -602,5 +618,3 @@ const pdfGenerator = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', app.init);
-
-
