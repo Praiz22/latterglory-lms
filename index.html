@@ -39,10 +39,13 @@
                 <div class="col-lg-4 order-lg-2 mb-4">
                     <div class="card shadow-sm p-4 h-100">
                         <h2 class="text-danger fw-bold mb-3"><i class="fas fa-user-circle me-2"></i> Student Details</h2>
+                        
                         <div class="mb-3 text-center">
-                            <img id="photoPreview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
-                                alt="Student Photo" class="student-photo border rounded" />
-                            <small class="d-block text-muted mt-1">Photo auto-loads from Reg No.</small>
+                            <div id="photoContainer" class="photo-container mb-2 mx-auto">
+                                <img id="photoPreview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
+                                    alt="Student Photo" class="student-photo-preview border rounded" />
+                            </div>
+                            <small class="d-block text-muted mt-1">Photo auto-loads from Reg No. (Optional: Upload to replace)</small>
                             <input type="file" id="studentPhoto" class="form-control form-control-sm mt-2" accept="image/*" />
                         </div>
                         <div class="mb-3">
