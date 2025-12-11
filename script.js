@@ -27,18 +27,24 @@ const app = {
         app.setupEventListeners();
         scoreManager.init();
         
+        // Update placeholder while loading
+        document.getElementById('classSelectInput').innerHTML = '<option value="">-- Loading Classes... --</option>';
+        document.getElementById('loadClassBtn').disabled = true;
+
         // --- CORE CHANGE: Load your students.json from GitHub/Local Folder ---
         try {
             const response = await fetch('students.json');
             if(response.ok) {
                 app.studentsDB = await response.json();
                 console.log(`[DB] Successfully loaded ${app.studentsDB.length} students from students.json.`);
+                app.populateClassSelectModal(); // <--- DYNAMICALLY POPULATE CLASSES
             } else {
-                // If loading fails, still allow manual entry
                 console.warn("[DB] students.json not found or failed to load. Proceeding with manual entry option only.");
+                document.getElementById('classSelectInput').innerHTML = '<option value="">-- Error: DB not loaded --</option>';
             }
         } catch (e) {
             console.error("[DB ERROR] Failed to fetch students.json:", e);
+            document.getElementById('classSelectInput').innerHTML = '<option value="">-- Error: DB not loaded --</option>';
         }
         
         // Add initial subjects for a fresh result sheet
@@ -62,13 +68,45 @@ const app = {
         }
     },
     
+    // --- NEW FUNCTION: DYNAMICALLY POPULATE CLASS SELECT MODAL ---
+    populateClassSelectModal: () => {
+        const classSelect = document.getElementById('classSelectInput');
+        
+        // 1. Extract unique class names (JSS1, SSS3) from the database
+        const uniqueClasses = [...new Set(app.studentsDB.map(s => s.class))];
+        
+        // 2. Sort them correctly (JSS1 < JSS2 < SSS1, etc.)
+        const sortedClasses = uniqueClasses.sort((a, b) => {
+             const getSortValue = (c) => {
+                const parts = c.match(/([A-Z]+)(\d)/);
+                if (parts) {
+                    const type = parts[1]; 
+                    const num = parseInt(parts[2]); 
+                    const typeValue = type === 'JSS' ? 100 : 200; // JSS sorts before SSS
+                    return typeValue + num;
+                }
+                return 999; 
+            };
+            return getSortValue(a) - getSortValue(b);
+        });
+
+        // 3. Populate the dropdown
+        classSelect.innerHTML = '<option value="">-- Select Class --</option>';
+        
+        sortedClasses.forEach(classId => {
+            // Convert 'JSS1' back to 'JSS 1' for display in the dropdown
+            const displayClass = classId.replace(/(\w{3})(\d)/, '$1 $2');
+            classSelect.add(new Option(displayClass, classId));
+        });
+        
+        // Enable the load button if classes are available
+        document.getElementById('loadClassBtn').disabled = sortedClasses.length === 0;
+    },
+    
     setupClassModalEvents: () => {
         const classSelect = document.getElementById('classSelectInput');
         const loadBtn = document.getElementById('loadClassBtn');
         
-        // Use 'd-none' instead of style.display = "none" for Bootstrap classes
-        document.getElementById("authModal").classList.add("d-none");
-
         classSelect.addEventListener('change', () => {
             loadBtn.disabled = classSelect.value === "";
         });
@@ -78,10 +116,14 @@ const app = {
         const selectedClassValue = document.getElementById('classSelectInput').value;
         if (!selectedClassValue) return;
 
-        app.selectedClass = selectedClassValue.replace(/\s/g, ''); // Ensure format is JSS1, SSS3
+        // The stored format is JSS1, SSS3
+        app.selectedClass = selectedClassValue; 
+        
+        // The displayed format is JSS 1, SSS 3
+        const displayClass = selectedClassValue.replace(/(\w{3})(\d)/, '$1 $2');
         
         // Update the main form's class field
-        document.getElementById('studentClass').value = selectedClassValue;
+        document.getElementById('studentClass').value = displayClass;
         
         document.getElementById("classSelectModal").classList.add("d-none");
         document.getElementById("mainContent").classList.remove("d-none");
@@ -108,9 +150,10 @@ const app = {
             });
             regSelect.disabled = false;
         } else {
+            // Option for manual entry if no students exist in the DB for that class
             const option = document.createElement('option');
             option.value = "new_entry";
-            option.textContent = `No students found for ${className}. Select for Manual Entry.`;
+            option.textContent = `No students found for ${className.replace(/(\w{3})(\d)/, '$1 $2')}. Select for Manual Entry.`;
             regSelect.appendChild(option);
             regSelect.disabled = false;
             app.clearStudentData();
@@ -138,7 +181,7 @@ const app = {
         // Class name from the JSON is like 'JSS1', but we display 'JSS 1'
         const displayClass = student.class.replace(/(\w{3})(\d)/, '$1 $2');
         
-        document.getElementById('studentClass').value = displayClass || app.selectedClass;
+        document.getElementById('studentClass').value = displayClass;
         document.getElementById('studentName').value = student.name;
         document.getElementById('studentGender').value = student.gender;
         
@@ -335,8 +378,8 @@ const pdfGenerator = {
 
     // Placeholder for metric update (not strictly needed for this file but good practice)
     updateMetrics: () => {
-        // In this setup, metrics are calculated directly in the PDF generation, 
-        // but this function can be used to update a visible dashboard if needed.
+        // Recalculates metrics but doesn't update a separate UI element.
+        // It's mainly used to trigger calculation before PDF generation.
     },
 
     createPDF: async () => {
@@ -535,7 +578,7 @@ const pdfGenerator = {
             alert("Error saving PDF. Check console.");
         }
         
-        btn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>Download PDF';
+        btn.innerHTML = '<i class="fas fa-file-pdf me-2"></i> Save as PDF';
         btn.disabled = false;
     },
 
