@@ -6,8 +6,8 @@
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "2025-01-13", // Date for next term resumption
-    currentTerm: "1st Term 2024/2025",
+    resumptionDate: "05-01-2026", // Date for next term resumption
+    currentTerm: "1st Term 2025/2026",
     maxSubjects: 18,
     sampleSubjects: [
         "English Language", "Mathematics", "N.V", "P.V.S", "B.S.T",
@@ -227,7 +227,7 @@ const app = {
         const teachers = document.getElementById('classTeacherComment');
         const principals = document.getElementById('principalComment');
         
-        const tOptions = ["Excellent result. Keep it up!", "Good performance. Room for improvement.", "He is a good boy but plays too much.", "Needs to sit up and focus.", "An obedient student, with satisfactory results."];
+        const tOptions = ["Excellent result. Keep it up!", "Good performance. Room for improvement.","She is a good girl but she plays too much", "He is a good boy but plays too much.", "Needs to sit up and focus.", "An obedient student, with satisfactory results."];
         const pOptions = ["Outstanding performance. Promoted to next class.", "Promoted to next class.", "Advised to repeat the class.", "Good result.", "Satisfactory performance."];
 
         tOptions.forEach(o => teachers.add(new Option(o, o)));
@@ -602,3 +602,4 @@ const pdfGenerator = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', app.init);
+
