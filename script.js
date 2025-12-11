@@ -6,7 +6,7 @@
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "05-01-2026", // Date for next term resumption
+    resumptionDate: "2026-01-05", // Date for next term resumption
     currentTerm: "1st Term 2025/2026",
     maxSubjects: 18,
     sampleSubjects: [
@@ -602,4 +602,5 @@ const pdfGenerator = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', app.init);
+
 
