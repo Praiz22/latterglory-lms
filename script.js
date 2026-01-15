@@ -329,6 +329,17 @@ const scoreManager = {
         
         // Recalculate metrics when any score changes
         pdfGenerator.updateMetrics();
+    },
+
+    getSubjectData: () => {
+        const rows = document.querySelectorAll('.subject-row');
+        return Array.from(rows).map(row => ({
+            name: row.querySelector('.subject-select').value || row.querySelector('.custom-subject').value,
+            ca: parseFloat(row.querySelector('.ca-score').value) || 0,
+            exam: parseFloat(row.querySelector('.exam-score').value) || 0,
+            total: parseInt(row.querySelector('.total-score').innerText) || 0,
+            grade: row.querySelector('.grade').innerText
+        }));
     }
 };
 
@@ -590,14 +601,7 @@ const pdfGenerator = {
     savePDF: async () => {
     // 1. Gather the data exactly as your LMS calculates it
     const metrics = pdfGenerator.calculateMetrics();
-    const rows = document.querySelectorAll('.subject-row');
-    const subjectData = Array.from(rows).map(row => ({
-        name: row.querySelector('.subject-select').value,
-        ca: row.querySelector('.ca-score').value,
-        exam: row.querySelector('.exam-score').value,
-        total: row.querySelector('.total-score').innerText,
-        grade: row.querySelector('.grade').innerText
-    }));
+    const subjectData = scoreManager.getSubjectData();
 
     const resultData = {
         matric_no: document.getElementById('regNumberSelect').value,
@@ -619,23 +623,7 @@ const pdfGenerator = {
         console.error("Database Save Failed:", err);
     }
 
-    // Extract data for the database
-const finalData = {
-    matric_no: document.getElementById('regNumberSelect').value,
-    term: CONFIG.currentTerm,
-    session: "2024/2025",
-    subject_data: scoreManager.getSubjectData(), // You'll need to create this helper
-    summary_metrics: pdfGenerator.calculateMetrics(),
-    teacher_comment: document.getElementById('classTeacherComment').value,
-    principal_comment: document.getElementById('principalComment').value
-};
 
-// Push to Supabase via our API
-fetch('http://localhost:5000/api/results/save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(finalData)
-});
     // 3. Keep your existing PDF download logic
     const doc = await pdfGenerator.createPDF();
     doc.save(`${resultData.matric_no}_Result.pdf`);
