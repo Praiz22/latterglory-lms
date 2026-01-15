@@ -55,7 +55,8 @@ const app = {
         app.populateCommentDropdowns();
     },
 
-    verifyAdmin: () => {
+    verifyAdmin: (e) => {
+        e.preventDefault();
         const key = document.getElementById("adminKeyInput").value.trim();
         if (key === CONFIG.adminKey) {
             document.getElementById("authModal").classList.add("d-none"); // Hide auth modal
@@ -261,7 +262,7 @@ const app = {
             }
         });
 
-        document.getElementById('adminLoginBtn').addEventListener('click', app.verifyAdmin);
+        document.getElementById('adminBtn').addEventListener('click', app.verifyAdmin);
         document.getElementById('generateReportBtn').addEventListener('click', pdfGenerator.generatePreview);
         document.getElementById('savePdfBtn').addEventListener('click', pdfGenerator.savePDF);
     }
