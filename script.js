@@ -588,22 +588,58 @@ const pdfGenerator = {
     },
 
     savePDF: async () => {
-        const btn = document.getElementById('savePdfBtn');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-        btn.disabled = true;
-        
-        try {
-            const doc = await pdfGenerator.createPDF();
-            const name = document.getElementById('studentName').value || 'Student';
-            doc.save(`${name.replace(/ /g, '_')}_Result.pdf`);
-        } catch (error) {
-            console.error(error);
-            alert("Error saving PDF. Check console.");
-        }
-        
-        btn.innerHTML = '<i class="fas fa-file-pdf me-2"></i> Save as PDF';
-        btn.disabled = false;
-    },
+    // 1. Gather the data exactly as your LMS calculates it
+    const metrics = pdfGenerator.calculateMetrics();
+    const rows = document.querySelectorAll('.subject-row');
+    const subjectData = Array.from(rows).map(row => ({
+        name: row.querySelector('.subject-select').value,
+        ca: row.querySelector('.ca-score').value,
+        exam: row.querySelector('.exam-score').value,
+        total: row.querySelector('.total-score').innerText,
+        grade: row.querySelector('.grade').innerText
+    }));
+
+    const resultData = {
+        matric_no: document.getElementById('regNumberSelect').value,
+        subject_scores: subjectData,
+        metrics: metrics,
+        teacher_comment: document.getElementById('classTeacherComment').value,
+        principal_comment: document.getElementById('principalComment').value
+    };
+
+    // 2. SEND TO BACKEND
+    try {
+        const response = await fetch('http://localhost:5000/api/results/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(resultData)
+        });
+        if(response.ok) alert("✅ Result Saved to Academy Database!");
+    } catch (err) {
+        console.error("Database Save Failed:", err);
+    }
+
+    // Extract data for the database
+const finalData = {
+    matric_no: document.getElementById('regNumberSelect').value,
+    term: CONFIG.currentTerm,
+    session: "2024/2025",
+    subject_data: scoreManager.getSubjectData(), // You'll need to create this helper
+    summary_metrics: pdfGenerator.calculateMetrics(),
+    teacher_comment: document.getElementById('classTeacherComment').value,
+    principal_comment: document.getElementById('principalComment').value
+};
+
+// Push to Supabase via our API
+fetch('http://localhost:5000/api/results/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(finalData)
+});
+    // 3. Keep your existing PDF download logic
+    const doc = await pdfGenerator.createPDF();
+    doc.save(`${resultData.matric_no}_Result.pdf`);
+}
 
     loadImage: (url) => {
         return new Promise(resolve => {
