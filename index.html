@@ -16,7 +16,7 @@
         <img src="latter-glory logo.png" alt="Logo" class="pulse-logo mb-3" />
         <h4 class="text-danger fw-bold">Admin Access</h4>
         <input type="password" id="adminKeyInput" placeholder="Enter Admin Key" />
-        <button onclick="app.verifyAdmin()">Access</button>
+        <button id="adminBtn">Access</button>
         <p id="authError" class="text-danger mt-2 d-none">Invalid key</p>
       </div>
     </div>
@@ -27,7 +27,7 @@
             <select id="classSelectInput" class="form-select mb-3">
                 <option value="">-- Loading Classes... --</option>
             </select>
-            <button id="loadClassBtn" onclick="app.loadClassData()" disabled>Load Class</button>
+            <button id="loadClassBtn" disabled>Load Class</button>
         </div>
     </div>
 
