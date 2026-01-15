@@ -110,6 +110,8 @@ const app = {
         classSelect.addEventListener('change', () => {
             loadBtn.disabled = classSelect.value === "";
         });
+
+        loadBtn.addEventListener('click', app.loadClassData);
     },
 
     loadClassData: () => {
@@ -259,6 +261,7 @@ const app = {
             }
         });
 
+        document.getElementById('adminLoginBtn').addEventListener('click', app.verifyAdmin);
         document.getElementById('generateReportBtn').addEventListener('click', pdfGenerator.generatePreview);
         document.getElementById('savePdfBtn').addEventListener('click', pdfGenerator.savePDF);
     }
