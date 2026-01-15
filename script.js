@@ -631,7 +631,7 @@ const pdfGenerator = {
     // 3. Keep your existing PDF download logic
     const doc = await pdfGenerator.createPDF();
     doc.save(`${resultData.matric_no}_Result.pdf`);
-}
+},
 
     loadImage: (url) => {
         return new Promise(resolve => {
