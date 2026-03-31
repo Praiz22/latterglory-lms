@@ -6,8 +6,8 @@
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "2025-01-06", // Date for next term resumption
-    currentTerm: "1st Term 2024/2025",
+    resumptionDate: "2026-04-27", // Date for next term resumption
+    currentTerm: "2nd Term 2025/2026",
     maxSubjects: 18,
     sampleSubjects: [
         "English Language", "Mathematics", "N.V", "P.V.S", "B.S.T",
@@ -246,8 +246,8 @@ const app = {
         const teachers = document.getElementById('classTeacherComment');
         const principals = document.getElementById('principalComment');
         
-        const tOptions = ["Excellent result. Keep it up!", "Good performance. Room for improvement.", "He is a good boy but plays too much.", "Needs to sit up and focus.", "An obedient student, with satisfactory results."];
-        const pOptions = ["Outstanding performance. Promoted to next class.", "Promoted to next class.", "Advised to repeat the class.", "Good result.", "Satisfactory performance."];
+        const tOptions = ["Excellent result. Keep it up!", "Good performance. Room for improvement.", "He is a good boy but plays too much.", "She is a good girl but plays too much.","Needs to sit up and focus.", "An obedient student, with satisfactory results."];
+        const pOptions = ["Outstanding performance. Promoted to next class.", "Promoted to next class.", "Advised to repeat the class.", "Good result.", "Fair result.","Poor Performance.","Satisfactory performance."];
 
         tOptions.forEach(o => teachers.add(new Option(o, o)));
         pOptions.forEach(o => principals.add(new Option(o, o)));
