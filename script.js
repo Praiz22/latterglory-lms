@@ -431,7 +431,7 @@ const pdfGenerator = {
         
         doc.setFont("helvetica", "normal").setFontSize(10).setTextColor(0, 0, 0);
         doc.text("The Academy For Geniuses", 45, 26);
-        doc.text("Tel: (+234) 8162873036 | Web: latter-glory.web.app", 45, 31);
+        doc.text("Tel: (+234) 8162873036 | Web: lattergloryacademy.com.ng", 45, 31);
         
         doc.setDrawColor(200, 200, 200);
         doc.line(15, 40, 195, 40);
