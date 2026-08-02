@@ -6,8 +6,8 @@
 // 1. CONFIGURATION
 const CONFIG = {
     adminKey: "latter25",
-    resumptionDate: "2026-04-27", // Date for next term resumption
-    currentTerm: "2nd Term 2025/2026",
+    resumptionDate: "2026-09-14", // Date for next term resumption
+    currentTerm: "3rd Term 2025/2026",
     maxSubjects: 18,
     sampleSubjects: [
         "English Language", "Mathematics", "N.V", "P.V.S", "B.S.T",
