@@ -366,5 +366,21 @@
     "photo": "jokotoye_mary.jpg",
     "id": "ST046",
     "regNumber": "LGA/25/S2/046"
-  }
+  },
+  {
+    "name": "OKERONBI CHRISTOPHER",
+    "class": "JSS 2",
+    "gender": "Male",
+    "photo": "okeronbi.jpg",
+    "id": "ST047",
+    "regNumber": "LGA/25/J2/046"
+  },
+   {
+    "name": "AJADI MERCY",
+    "class": "JSS 2",
+    "gender": "Female",
+    "photo": "ajadi_mercy.jpg",
+    "id": "ST047",
+    "regNumber": "LGA/25/J2/047"
+  },
 ]
